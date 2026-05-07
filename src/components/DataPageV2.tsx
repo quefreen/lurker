@@ -4,7 +4,6 @@ import '@/styles/data-states.css'
 import { useState } from 'react'
 import { SignInCTA } from '@/components/SignInCTA'
 import { MapRoundsTable } from '@/components/MapRoundsTable'
-import svgPaths from '@/imports/DataPage/svg-ukueh2hs0j'
 import { MatchAnalysis, Entry, CardState } from '@/lib/types'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -368,7 +367,7 @@ function formatMatchDate(dateStr?: string): string {
 function CloseIcon() {
   return (
     <svg className="shrink-0 w-5 h-5" fill="none" viewBox="0 0 24 24">
-      <path d={svgPaths.p308df980} fill="#D63434" />
+      <path d="M8.4 17L7 15.6L10.6 12L7 8.425L8.4 7.025L12 10.625L15.575 7.025L16.975 8.425L13.375 12L16.975 15.6L15.575 17L12 13.4L8.4 17Z" fill="#D63434" />
     </svg>
   )
 }

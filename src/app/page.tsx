@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { getProfitCardData, getMatchesForCarrossel } from '@/lib/queries';
 import { FixedProfitCard } from '@/components/ProfitCard';
 import { GameCardItem, mockGameCards } from '@/components/GameCard';

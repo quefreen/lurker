@@ -2,7 +2,6 @@
 
 import '@/styles/data-states.css'
 import { SignInCTA } from '@/components/SignInCTA'
-import svgPaths from '@/imports/DataPage/svg-ukueh2hs0j'
 import { MatchAnalysis, Entry, CardState } from '@/lib/types'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -473,7 +472,7 @@ function parseDoNotRecommend(dnr: any, idx: number): NotRecItem {
 function WarningIcon() {
   return (
     <svg className="shrink-0 w-6 h-6" fill="none" viewBox="0 0 24 24">
-      <path d={svgPaths.p28073b80} fill="#1C1B1F" />
+      <path d="M1 21L12 2L23 21H1ZM4.45 19H19.55L12 6L4.45 19ZM12.7125 17.7125C12.9042 17.5208 13 17.2833 13 17C13 16.7167 12.9042 16.4792 12.7125 16.2875C12.5208 16.0958 12.2833 16 12 16C11.7167 16 11.4792 16.0958 11.2875 16.2875C11.0958 16.4792 11 16.7167 11 17C11 17.2833 11.0958 17.5208 11.2875 17.7125C11.4792 17.9042 11.7167 18 12 18C12.2833 18 12.5208 17.9042 12.7125 17.7125ZM11 15H13V10H11V15Z" fill="#1C1B1F" />
     </svg>
   )
 }
@@ -481,7 +480,7 @@ function WarningIcon() {
 function CloseIcon() {
   return (
     <svg className="shrink-0 w-6 h-6" fill="none" viewBox="0 0 24 24">
-      <path d={svgPaths.p308df980} fill="#D63434" />
+      <path d="M8.4 17L7 15.6L10.6 12L7 8.425L8.4 7.025L12 10.625L15.575 7.025L16.975 8.425L13.375 12L16.975 15.6L15.575 17L12 13.4L8.4 17Z" fill="#D63434" />
     </svg>
   )
 }

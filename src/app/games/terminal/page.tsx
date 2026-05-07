@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { getMatchesForCarrossel, getProfitCardData } from '@/lib/queries'
 import LandingMenu from '@/components/LandingMenu'
 import { CarrosselJogos } from '@/components/CarrosselJogos'

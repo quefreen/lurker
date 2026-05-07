@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { getMatchesForCarrossel, getProfitCardData } from '@/lib/queries';
 import { calcCardState } from '@/lib/utils';
 import DataPageV2 from '@/components/DataPageV2';
