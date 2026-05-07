@@ -412,10 +412,12 @@ function Header({ teamA, teamB, rankA, rankB, tournament, format, matchDate, ent
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="panel-bg border border-[#1e2028] rounded-[6px] flex flex-col items-center justify-center px-5 py-4 min-w-[80px] gap-1">
-              <p className="text-[11px] uppercase tracking-widest" style={{ fontFamily: FONT_TEXT, fontWeight: 500, color: '#6b7280' }}>EDGE</p>
-              <p className="text-[22px]" style={{ fontFamily: FONT_NUM, fontWeight: 600, color: '#BBFF14' }}>+{topEdge.toFixed(1)}%</p>
-            </div>
+            {topEdge >= 0 && (
+              <div className="panel-bg border border-[#1e2028] rounded-[6px] flex flex-col items-center justify-center px-5 py-4 min-w-[80px] gap-1">
+                <p className="text-[11px] uppercase tracking-widest" style={{ fontFamily: FONT_TEXT, fontWeight: 500, color: '#6b7280' }}>EDGE</p>
+                <p className="text-[22px]" style={{ fontFamily: FONT_NUM, fontWeight: 600, color: '#BBFF14' }}>+{topEdge.toFixed(1)}%</p>
+              </div>
+            )}
             <div className="panel-bg border border-[#1e2028] rounded-[6px] flex flex-col items-center justify-center px-5 py-4 min-w-[80px] gap-1">
               <p className="text-[11px] uppercase tracking-widest" style={{ fontFamily: FONT_TEXT, fontWeight: 500, color: '#6b7280' }}>EV+</p>
               <p className="text-white text-[22px]" style={{ fontFamily: FONT_TEXT, fontWeight: 600 }}>{entriesCount} Entry</p>
