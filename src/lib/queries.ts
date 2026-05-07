@@ -22,29 +22,33 @@ function statusToCardState(status: string): CardState {
 }
 
 export async function getMatchesForCarrossel(): Promise<MatchCardData[]> {
-  const result = await db.execute(`
-    SELECT
-      m.slug,
-      m.team_a,
-      m.team_b,
-      m.tournament,
-      m.match_date,
-      m.status,
-      COALESCE(json_array_length(json_extract(ma.data, '$.entries_ranked')), 0) AS entries_count
-    FROM matches m
-    LEFT JOIN match_analysis ma ON m.slug = ma.slug
-    ORDER BY m.match_date DESC
-  `);
+  try {
+    const result = await db.execute(`
+      SELECT
+        m.slug,
+        m.team_a,
+        m.team_b,
+        m.tournament,
+        m.match_date,
+        m.status,
+        COALESCE(json_array_length(json_extract(ma.data, '$.entries_ranked')), 0) AS entries_count
+      FROM matches m
+      LEFT JOIN match_analysis ma ON m.slug = ma.slug
+      ORDER BY m.match_date DESC
+    `);
 
-  return (result.rows as any[]).map((row) => ({
-    slug: row.slug,
-    teamA: row.team_a,
-    teamB: row.team_b,
-    tournament: row.tournament,
-    matchDate: row.match_date,
-    cardState: statusToCardState(row.status),
-    entriesCount: Number(row.entries_count),
-  }));
+    return (result.rows as any[]).map((row) => ({
+      slug: row.slug,
+      teamA: row.team_a,
+      teamB: row.team_b,
+      tournament: row.tournament,
+      matchDate: row.match_date,
+      cardState: statusToCardState(row.status),
+      entriesCount: Number(row.entries_count),
+    }));
+  } catch {
+    return [];
+  }
 }
 
 // Busca jogos para o carrossel (apenas dados básicos)
