@@ -1,0 +1,917 @@
+'use client'
+
+import '@/styles/data-states.css'
+import { useState } from 'react'
+import { SignInCTA } from '@/components/SignInCTA'
+import { MapRoundsTable } from '@/components/MapRoundsTable'
+import svgPaths from '@/imports/DataPage/svg-ukueh2hs0j'
+import { MatchAnalysis, Entry, CardState } from '@/lib/types'
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type DataState = 'white' | 'yellow' | 'green' | 'amber' | 'orange' | 'red'
+type EntryStatus = 'default' | 'green' | 'red'
+
+const dataStateClass: Record<DataState, string> = {
+  white: 'state-white',
+  yellow: 'state-yellow',
+  green: 'state-green',
+  amber: 'state-amber',
+  orange: 'state-orange',
+  red: 'state-red',
+}
+
+interface ScenarioData {
+  id: number
+  label: string
+  labelColor: string
+  percentage: string
+  description: string
+  buttonState: DataState
+  buttonLabel: string
+  resultLabel: string
+  resultValue: string
+}
+
+interface NotRecItem {
+  id: number
+  label: string
+  pct: string
+  reason: string
+}
+
+export interface DataPageV2Props {
+  analysis?: MatchAnalysis
+  cardState?: CardState
+  coverImage?: string
+  mode?: 'full' | 'teaser'
+  teaserEntriesCount?: number
+}
+
+// ─── Font constants ───────────────────────────────────────────────────────────
+
+const FONT_NUM  = "'Sora', sans-serif"
+const FONT_TEXT = "'Barlow Condensed', sans-serif"
+
+// ─── Helpers — identical to DataPage ─────────────────────────────────────────
+
+function pctColor(pct: number) {
+  if (pct >= 70) return '#32e601'
+  if (pct >= 50) return '#BBFF14'
+  if (pct >= 35) return '#FFE23D'
+  return '#f40101'
+}
+
+function confidenceToState(conf: string): DataState {
+  if (conf === 'S' || conf === 'A') return 'green'
+  if (conf === 'B') return 'amber'
+  if (conf === 'C') return 'orange'
+  return 'red'
+}
+
+function normalizeEntry(e: any): Entry {
+  return {
+    rank: e.rank ?? 0,
+    market_name: e.market_name ?? e.market ?? '',
+    odd: e.odd ?? 0,
+    implied_prob: e.implied_prob ?? 0,
+    estimated_prob: e.estimated_prob ?? 0,
+    edge: e.edge ?? 0,
+    confidence: e.confidence ?? 'SEM EDGE',
+    stake: e.stake ?? 1,
+    justification_points: e.justification_points ?? e.justification ?? [],
+    verdict: e.verdict ?? '',
+  }
+}
+
+const SCENARIO_META: Record<string, { labelColor: string; buttonState: DataState; resultLabel: string }> = {
+  PROVAVEL: { labelColor: '#32e601', buttonState: 'green',  resultLabel: 'BALANCE' },
+  BOM:      { labelColor: '#e8cd01', buttonState: 'amber',  resultLabel: 'BALANCE' },
+  RUIM:     { labelColor: '#cc0101', buttonState: 'red',    resultLabel: 'BALANCE' },
+  PESSIMO:  { labelColor: '#cc0101', buttonState: 'red',    resultLabel: 'TOTAL LOSS:' },
+  IDEAL:    { labelColor: '#32e601', buttonState: 'green',  resultLabel: 'BALANCE' },
+  NEUTRO:   { labelColor: '#e86101', buttonState: 'orange', resultLabel: 'BALANCE' },
+}
+
+function getButtonLabel(entriesHit: string[], entriesMiss: string[]): string {
+  if (entriesMiss?.includes('Todas')) return 'ALL ENTRIES'
+  if (!entriesMiss?.length) return `${entriesHit?.length ?? 0} HITS`
+  return 'MIXED RESULT'
+}
+
+function parseV1ButtonLabel(result: string): string {
+  const r = result.toLowerCase()
+  if (r.includes('todas')) return 'ALL ENTRIES'
+  if (r.includes('misto')) return 'MIXED RESULT'
+  if (r.includes('negativo')) return 'NEGATIVE RESULT'
+  const rangeMatch = result.match(/(\d+-\d+)\s+de\s+\d+/i)
+  if (rangeMatch) return `${rangeMatch[1]} HITS`
+  const countMatch = result.match(/(\d+)\s+de\s+\d+/i)
+  if (countMatch) return `${countMatch[1]} HITS`
+  return '—'
+}
+
+type EntryStakeInfo = { odd: number; stake: number }
+
+function matchMarket(abbreviated: string, fullName: string): boolean {
+  const a = abbreviated.toLowerCase().replace(/\s*\(.*?\)/g, '').trim()
+  const f = fullName.toLowerCase().trim()
+  return f.startsWith(a) || a.startsWith(f)
+}
+
+function calcScenarioProfit(
+  entriesHit: string[],
+  entriesMiss: string[],
+  stakesByMarket: Map<string, EntryStakeInfo>,
+  totalInvestment: number
+): number {
+  if (entriesMiss?.includes('Todas')) return -totalInvestment
+  let profit = 0
+  const find = (name: string) => {
+    for (const [key, val] of stakesByMarket) {
+      if (matchMarket(name, key)) return val
+    }
+  }
+  for (const name of (entriesHit ?? [])) {
+    const e = find(name)
+    if (e) profit += (e.odd - 1) * e.stake
+  }
+  for (const name of (entriesMiss ?? [])) {
+    const e = find(name)
+    if (e) profit -= e.stake
+  }
+  return profit
+}
+
+function deriveV1Probability(description: string, rawBo3: any): string {
+  const d = description.toLowerCase()
+  const re = /(\w+)\s+3[-–](\d)/g
+  let m: RegExpExecArray | null
+  let total = 0
+  let found = false
+  while ((m = re.exec(d)) !== null) {
+    const teamFrag = m[1].slice(0, 4)
+    const suffix = `_3_${m[2]}`
+    for (const [key, val] of Object.entries(rawBo3)) {
+      if (key === 'summary') continue
+      const kl = key.toLowerCase()
+      if (kl.endsWith(suffix) && kl.includes(teamFrag)) {
+        const prob = (val as any)?.prob
+        if (typeof prob === 'number') { total += prob; found = true }
+      }
+    }
+  }
+  return found ? `${total.toFixed(1)}%` : ''
+}
+
+function expandOverList(sentence: string): string {
+  return sentence.replace(
+    /Over\s+([\d.]+)((?:\s*[,e]\s*[\d.]+)+)/gi,
+    (_match, first: string, rest: string) => {
+      const nums = rest.split(/\s*[,e]\s*/).filter(Boolean)
+      return `Over ${first}` + nums.map((n) => ` Over ${n.trim()}`).join('')
+    }
+  )
+}
+
+function parseV1ScenarioProfit(
+  result: string,
+  stakesByMarket: Map<string, EntryStakeInfo>,
+  _totalInvestment: number
+): number | null {
+  if (!result || !stakesByMarket.size) return null
+  const r = result.toLowerCase()
+  if (r.includes('todas') && r.includes('acertam')) {
+    return Array.from(stakesByMarket.values()).reduce((sum, e) => sum + (e.odd - 1) * e.stake, 0)
+  }
+  const restantePerde = r.includes('restante perde')
+  const winKeys       = new Set<string>()
+  const loseKeys      = new Set<string>()
+  const uncertainKeys = new Set<string>()
+  const matchFrag = (key: string, frag: string): boolean => {
+    if (frag.startsWith('OVER:'))  return key.includes(`over ${frag.slice(5)}`)
+    if (frag === 'PARI_25')        return key.includes('+2.5') || key.includes('handicap')
+    if (frag === 'PARI_1MAP')      return key.includes('pelo menos 1') || key.includes('1+ mapa')
+    if (frag.startsWith('RANGE:')) {
+      const [, minS, maxS] = frag.split(':')
+      const [min, max] = [parseFloat(minS), parseFloat(maxS)]
+      const mv = key.match(/over\s+([\d.]+)/)
+      if (mv) { const v = parseFloat(mv[1]); return v >= min && v <= max }
+    }
+    return false
+  }
+  const extractFrags = (sentence: string): string[] => {
+    const expanded = expandOverList(sentence)
+    const frags: string[] = []
+    const rangeM = expanded.match(/Over\s+([\d.]+)\s+a\s+([\d.]+)/i)
+    if (rangeM) {
+      frags.push(`RANGE:${rangeM[1]}:${rangeM[2]}`)
+    } else {
+      for (const m of expanded.matchAll(/Over\s+([\d.]+)\+/gi)) frags.push(`RANGE:${m[1]}:9999`)
+      for (const m of expanded.matchAll(/Over\s+([\d.]+)(?!\+|\d)/gi)) frags.push(`OVER:${m[1]}`)
+    }
+    const sl = expanded.toLowerCase()
+    if (sl.includes('+2.5') || sl.includes('handicap')) frags.push('PARI_25')
+    if (sl.includes('1+ mapa') || sl.includes('pelo menos 1')) frags.push('PARI_1MAP')
+    return frags
+  }
+  for (const sentence of result.split(/\.(?!\d)/)) {
+    const sl = sentence.toLowerCase()
+    const isDepende      = sl.includes('depende')
+    const isPossivelMiss = sl.includes('podem nao') || sl.includes('nao bater')
+    const acerta = sl.includes('acertam') || (sl.includes('acerta') && !sl.includes('nao acerta'))
+    const perde  = sl.includes('perdem')  || sl.includes('perde')  || sl.includes('nao bater')
+    const frags = extractFrags(sentence)
+    for (const key of stakesByMarket.keys()) {
+      for (const frag of frags) {
+        if (!matchFrag(key, frag)) continue
+        if (isDepende)             uncertainKeys.add(key)
+        else if (isPossivelMiss)   loseKeys.add(key)
+        else if (acerta && !perde) winKeys.add(key)
+        else if (perde  && !acerta) loseKeys.add(key)
+      }
+    }
+  }
+  if (winKeys.size === 0) return null
+  let conservative = 0
+  let optimistic   = 0
+  for (const [key, val] of stakesByMarket) {
+    const profit = (val.odd - 1) * val.stake
+    if (winKeys.has(key)) {
+      conservative += profit; optimistic += profit
+    } else if (uncertainKeys.has(key)) {
+      conservative -= val.stake; optimistic += profit
+    } else if (loseKeys.has(key) || restantePerde) {
+      conservative -= val.stake; optimistic -= val.stake
+    }
+  }
+  return uncertainKeys.size > 0 ? (conservative + optimistic) / 2 : conservative
+}
+
+type MarketResult = 'hit' | 'miss' | 'indeterminate'
+
+function resolveMarketFromScore(marketName: string, teamAScore: number, teamBScore: number): MarketResult {
+  const m = marketName.toLowerCase()
+  const totalMaps = teamAScore + teamBScore
+  const isDecider = totalMaps === 3
+  const teamBWins = teamBScore > teamAScore
+  if (/over\s*2\.5/.test(m))  return totalMaps > 2  ? 'hit' : 'miss'
+  if (/under\s*2\.5/.test(m)) return totalMaps <= 2 ? 'hit' : 'miss'
+  if (!m.includes('mapa') && !m.includes('map ') && !m.includes('map1') && !m.includes('map2')) {
+    if (m.includes('-1.5')) return (teamAScore === 2 && teamBScore === 0) ? 'hit' : 'miss'
+    if (m.includes('+1.5')) return (teamBWins || isDecider) ? 'hit' : 'miss'
+  }
+  if (m.includes('placar') || m.includes('correct score') || m.includes('score correto')) {
+    const cs = m.match(/(\d)\s*[-x,]\s*(\d)/)
+    if (cs) return (parseInt(cs[1]) === teamAScore && parseInt(cs[2]) === teamBScore) ? 'hit' : 'miss'
+  }
+  if (m.includes('ao menos 1') || m.includes('pelo menos 1') || m.includes('win at least')) {
+    const isBMarket = m.includes('team b') || m.includes('_b ') || m.includes('azarao')
+    if (isBMarket) return teamBScore >= 1 ? 'hit' : 'miss'
+    return teamAScore >= 1 ? 'hit' : 'miss'
+  }
+  if (
+    m.includes('mapa 1') || m.includes('mapa 2') || m.includes('map 1') || m.includes('map 2') ||
+    m.includes('rounds') || /over\s*\d{2}/.test(m) || /under\s*\d{2}/.test(m) ||
+    m.includes('team total') || m.includes('overtime')
+  ) return 'indeterminate'
+  return 'indeterminate'
+}
+
+function calcProfitFromScore(
+  teamAScore: number,
+  teamBScore: number,
+  stakesByMarket: Map<string, EntryStakeInfo>
+): { profit: number; hits: number; misses: number; indeterminate: number } {
+  let profit = 0, hits = 0, misses = 0, indeterminate = 0
+  for (const [marketName, info] of stakesByMarket) {
+    const result = resolveMarketFromScore(marketName, teamAScore, teamBScore)
+    if (result === 'hit')            { profit += (info.odd - 1) * info.stake; hits++ }
+    else if (result === 'miss')      { profit -= info.stake; misses++ }
+    else                              { indeterminate++ }
+  }
+  return { profit, hits, misses, indeterminate }
+}
+
+function jsonScenarioToData(
+  s: any,
+  idx: number,
+  stakesByMarket?: Map<string, EntryStakeInfo>,
+  totalInvestment?: number,
+  rawBo3?: any
+): ScenarioData {
+  const scenarioKey = ((s.name ?? s.scenario ?? '') as string).toUpperCase()
+  const meta = SCENARIO_META[scenarioKey] ?? { labelColor: '#ffffff', buttonState: 'white' as DataState, resultLabel: '' }
+  const isV3 = s.predicted_series_score != null
+  const isV2 = !isV3 && (s.entries_hit != null || s.net_result != null)
+  let buttonLabel: string
+  if (isV3 && stakesByMarket?.size) {
+    const { hits, misses } = calcProfitFromScore(
+      s.predicted_series_score.team_1_score ?? 0,
+      s.predicted_series_score.team_2_score ?? 0,
+      stakesByMarket
+    )
+    if (misses === 0 && hits > 0)       buttonLabel = `${hits} HITS`
+    else if (hits === 0 && misses > 0)  buttonLabel = 'MIXED RESULT'
+    else if (hits > 0 && misses > 0)    buttonLabel = 'MIXED RESULT'
+    else                                buttonLabel = '—'
+  } else if (isV2) {
+    buttonLabel = getButtonLabel(s.entries_hit ?? [], s.entries_miss ?? [])
+  } else {
+    buttonLabel = parseV1ButtonLabel(s.result ?? '')
+  }
+  let percentage = ''
+  if (s.probability != null) {
+    percentage = `${s.probability}%`
+  } else if (!isV2 && !isV3 && rawBo3) {
+    percentage = deriveV1Probability(s.description ?? '', rawBo3)
+  }
+  let resultValue = ''
+  if (isV3 && stakesByMarket?.size) {
+    const { profit } = calcProfitFromScore(
+      s.predicted_series_score.team_1_score ?? 0,
+      s.predicted_series_score.team_2_score ?? 0,
+      stakesByMarket
+    )
+    resultValue = `${profit >= 0 ? '+' : ''}${profit.toFixed(2)}u`
+  } else if (typeof s.net_result === 'number') {
+    resultValue = `${s.net_result >= 0 ? '+' : ''}${s.net_result.toFixed(2)}u`
+  } else if (stakesByMarket?.size) {
+    const profit = isV2
+      ? calcScenarioProfit(s.entries_hit ?? [], s.entries_miss ?? [], stakesByMarket, totalInvestment ?? 0)
+      : parseV1ScenarioProfit(s.result ?? '', stakesByMarket, totalInvestment ?? 0)
+    if (profit !== null) resultValue = `${profit >= 0 ? '+' : ''}${profit.toFixed(2)}u`
+  }
+  return { id: idx + 1, label: scenarioKey.toLowerCase(), labelColor: meta.labelColor, percentage, description: s.description ?? '', buttonState: meta.buttonState, buttonLabel, resultLabel: meta.resultLabel, resultValue }
+}
+
+function parseDoNotRecommend(dnr: any, idx: number): NotRecItem {
+  let pct: string
+  if (typeof dnr.edge === 'number') {
+    pct = `${dnr.edge > 0 ? '+' : ''}${dnr.edge}%`
+  } else {
+    const pctMatch = (dnr.reason ?? '').match(/\(([+-]?\d+\.?\d*%)\)/)
+    pct = pctMatch ? pctMatch[1] : ''
+  }
+  return { id: idx, label: dnr.market ?? '', pct, reason: dnr.reason ?? '' }
+}
+
+function formatMatchDate(dateStr?: string): string {
+  if (!dateStr) return ''
+  const d = new Date(dateStr)
+  if (isNaN(d.getTime())) return dateStr
+  return d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', timeZone: 'UTC' })
+}
+
+// ─── Icons ────────────────────────────────────────────────────────────────────
+
+function CloseIcon() {
+  return (
+    <svg className="shrink-0 w-5 h-5" fill="none" viewBox="0 0 24 24">
+      <path d={svgPaths.p308df980} fill="#D63434" />
+    </svg>
+  )
+}
+
+// ─── Section 1: Header ────────────────────────────────────────────────────────
+
+interface HeaderProps {
+  teamA: string; teamB: string; rankA?: number; rankB?: number
+  tournament: string; format: string; matchDate?: string
+  entriesCount: number; topEdge: number; coverImage?: string
+}
+
+function Header({ teamA, teamB, rankA, rankB, tournament, format, matchDate, entriesCount, topEdge, coverImage }: HeaderProps) {
+  return (
+    <div className="w-full bg-[#05060f] px-6 md:px-12 py-6">
+      <div className="max-w-[1184px] mx-auto">
+        <div
+          className="panel-bg rounded-[4px] border border-[#2b2b2b] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+          style={coverImage ? { backgroundImage: `url('${coverImage}')`, backgroundSize: 'cover', backgroundPosition: 'center center' } : undefined}
+        >
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-[#b5b5b5] text-[12px]" style={{ fontFamily: FONT_TEXT }}>{tournament}</span>
+              <div className="bg-white rounded-[2px] px-[6px] py-[2px]">
+                <span className="text-[#0a0b14] text-[12px]" style={{ fontFamily: FONT_TEXT }}>{format}</span>
+              </div>
+              {matchDate && (
+                <span className="text-[#b5b5b5] text-[12px]" style={{ fontFamily: FONT_TEXT }}>{formatMatchDate(matchDate)}</span>
+              )}
+            </div>
+            <div className="flex items-end gap-3">
+              <div>
+                {rankA != null && <p className="text-[#666] text-[12px]" style={{ fontFamily: FONT_NUM }}>#{rankA}</p>}
+                <p className="text-white text-[28px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>{teamA}</p>
+              </div>
+              <span className="text-[#adadad] text-[12px] pb-[5px]" style={{ fontFamily: FONT_TEXT }}>vs</span>
+              <div>
+                {rankB != null && <p className="text-[#666] text-[12px]" style={{ fontFamily: FONT_NUM }}>#{rankB}</p>}
+                <p className="text-white text-[28px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>{teamB}</p>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="panel-bg border border-[#1e2028] rounded-[6px] flex flex-col items-center justify-center px-5 py-4 min-w-[80px] gap-1">
+              <p className="text-[11px] uppercase tracking-widest" style={{ fontFamily: FONT_TEXT, fontWeight: 500, color: '#6b7280' }}>EDGE</p>
+              <p className="text-[22px]" style={{ fontFamily: FONT_NUM, fontWeight: 600, color: '#BBFF14' }}>+{topEdge.toFixed(1)}%</p>
+            </div>
+            <div className="panel-bg border border-[#1e2028] rounded-[6px] flex flex-col items-center justify-center px-5 py-4 min-w-[80px] gap-1">
+              <p className="text-[11px] uppercase tracking-widest" style={{ fontFamily: FONT_TEXT, fontWeight: 500, color: '#6b7280' }}>EV+</p>
+              <p className="text-white text-[22px]" style={{ fontFamily: FONT_TEXT, fontWeight: 600 }}>{entriesCount} Entry</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Section 2: Win Probability + Best Opportunity ────────────────────────────
+
+interface WinProbSectionProps {
+  teamA: string; teamB: string; rankA?: number; rankB?: number
+  winA: number; winB: number
+  topEntry: any
+  activeEntriesCount: number
+  potentialReturn: string
+  publicBet: string | null
+  isTeaser: boolean
+}
+
+function WinProbSection({ teamA, teamB, rankA, rankB, winA, winB, topEntry, activeEntriesCount, potentialReturn, publicBet, isTeaser }: WinProbSectionProps) {
+  return (
+    <div className="w-full bg-[#05060f] px-6 md:px-12 py-6">
+      <div className="max-w-[1184px] mx-auto flex flex-col lg:flex-row gap-6">
+
+        {/* Win Probability */}
+        <div className="panel-bg rounded-[20px] border border-[#2b2b2b] p-[18px] flex flex-col gap-6 flex-1 min-w-0">
+          <p className="text-[16px] uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 600, color: '#BBFF14' }}>Win Probability</p>
+          <div className="flex items-end justify-between w-full">
+            <div>
+              {rankA != null && <p className="text-[#666] text-[12px]" style={{ fontFamily: FONT_NUM }}>#{rankA}</p>}
+              <p className="text-white text-[20px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>{teamA.toUpperCase()}</p>
+            </div>
+            <div className="text-right">
+              {rankB != null && <p className="text-[#666] text-[12px]" style={{ fontFamily: FONT_NUM }}>#{rankB}</p>}
+              <p className="text-white text-[20px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>{teamB.toUpperCase()}</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-between w-full">
+            <span className="text-[36px]" style={{ fontFamily: FONT_NUM, fontWeight: 600, color: winA >= winB ? '#BBFF14' : 'white' }}>{winA}%</span>
+            <span className="text-[32px]" style={{ fontFamily: FONT_NUM, fontWeight: 400, color: winB > winA ? '#BBFF14' : 'white' }}>{winB}%</span>
+          </div>
+          <div className="flex h-[72px] w-full">
+            {winA >= winB ? (
+              <>
+                <div className="state-yellow shrink-0" style={{ width: `${winA}%`, borderRight: 'none', borderRadius: '4px 0 0 4px' }} />
+                <div className="state-white flex-1"   style={{ borderLeft:  'none', borderRadius: '0 4px 4px 0' }} />
+              </>
+            ) : (
+              <>
+                <div className="state-white shrink-0" style={{ width: `${winA}%`, borderRight: 'none', borderRadius: '4px 0 0 4px' }} />
+                <div className="state-yellow flex-1"  style={{ borderLeft:  'none', borderRadius: '0 4px 4px 0' }} />
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Best Opportunity */}
+        {isTeaser ? (
+          <div
+            className="rounded-[20px] flex flex-col justify-between gap-6 p-4 flex-1 min-w-0 min-h-[240px]"
+            style={{ border: '2px solid #2B2B2B', backgroundImage: "url('/card_paybutton.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+          >
+            <p style={{ fontFamily: FONT_NUM, fontWeight: 600, fontSize: '32px', color: '#ffffff', textTransform: 'uppercase', lineHeight: 1.1 }}>
+              Reveal<br />Best<br />Opportunity
+            </p>
+            <SignInCTA
+              style={{ fontFamily: FONT_NUM, fontWeight: 600, fontSize: '20px', textTransform: 'uppercase', color: '#000', background: 'radial-gradient(426.59% 426.59% at 50% 91.18%, #FFF 0%, #000 100%), #F3FAF6', border: '2px solid #FFF', borderRadius: '4px', padding: '16px 32px', cursor: 'pointer', width: '100%' }}
+            />
+          </div>
+        ) : (
+          <div
+            className="rounded-[20px] flex flex-col items-center flex-1 min-w-0 p-[18px] min-h-[240px]"
+            style={{ border: '1px solid #2B2B2B', background: 'radial-gradient(151.79% 151.79% at 50% 112.54%, #E6FF55 0%, #000 100%), radial-gradient(237.87% 66.04% at 50% 36.9%, rgba(9, 10, 5, 0.50) 55%, rgba(230, 255, 85, 0.50) 100%), linear-gradient(180deg, #10111A 0%, #0C0D16 17.31%)', backgroundBlendMode: 'color-dodge, color-dodge, normal' }}
+          >
+            <p className="text-[16px] uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 600, color: '#BBFF14' }}>
+              Best Opportunity
+            </p>
+            <div className="flex flex-col items-center justify-center flex-1 gap-[16px]">
+              <p className="text-white text-[32px] text-center leading-[1.2]" style={{ fontFamily: FONT_TEXT, fontWeight: 500, letterSpacing: '-0.41px' }}>
+                {topEntry?.market_name ?? topEntry?.market ?? '—'}
+              </p>
+              <div className="flex items-center gap-[5px] text-[18px]">
+                <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>ODD</span>
+                <span style={{ fontFamily: FONT_NUM, color: 'white' }}>{topEntry?.odd?.toFixed(2) ?? '—'}</span>
+                <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>·</span>
+                <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>STAKE</span>
+                <span style={{ fontFamily: FONT_NUM, color: 'white' }}>{topEntry?.stake ?? '—'}u</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 3-pills */}
+        <div className="panel-bg rounded-[20px] border border-[#2b2b2b] p-[18px] flex flex-col gap-[10px] flex-1 min-w-0 min-h-[240px]">
+          <div className="state-white flex-1 min-h-[64px] flex items-center justify-center w-full">
+            <p className="text-black uppercase text-[20px]" style={{ fontFamily: FONT_TEXT, fontWeight: 600 }}>{activeEntriesCount} EV+ Entry</p>
+          </div>
+          <div className="state-yellow flex-1 min-h-[64px] flex items-center justify-between px-6 w-full">
+            <p className="text-black uppercase text-[18px]" style={{ fontFamily: FONT_TEXT, fontWeight: 600 }}>POTENTIAL RETURN</p>
+            <p className="text-black text-[20px]" style={{ fontFamily: FONT_NUM, fontWeight: 600 }}>{isTeaser ? '—' : `${potentialReturn}u`}</p>
+          </div>
+          <div className="state-green flex-1 min-h-[64px] flex items-center justify-between px-6 w-full">
+            <p className="text-black uppercase text-[18px]" style={{ fontFamily: FONT_TEXT, fontWeight: 600 }}>PUBLIC BET</p>
+            <p className="text-black text-[20px]" style={{ fontFamily: FONT_TEXT, fontWeight: 600 }}>{publicBet ?? '—'}</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
+// ─── Section 3: Series Markets ────────────────────────────────────────────────
+
+function SeriesMarketsSection({ markets }: { markets: Array<{ label: string; rows: Array<{ name: string; pct: number }> }> }) {
+  if (!markets.length) return null
+  return (
+    <div className="w-full bg-[#05060f] px-6 md:px-12 py-6">
+      <div className="max-w-[1184px] mx-auto flex flex-col gap-6">
+        <p className="text-[14px] text-white uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>
+          Series Markets
+        </p>
+        <div className="flex flex-col lg:flex-row gap-6">
+          {markets.map((market) => (
+            <div key={market.label} className="panel-bg rounded-[20px] border border-[#2b2b2b] p-[18px] flex flex-col gap-6 flex-1 min-w-0">
+              <p className="text-[16px] uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 600, color: '#BBFF14' }}>
+                {market.label}
+              </p>
+              <div className="flex flex-col">
+                {market.rows.map((row, i) => (
+                  <div key={row.name}>
+                    {i > 0 && <div className="w-full h-[1px] bg-[#2B2B2B] my-6" />}
+                    <div className="flex items-center justify-between">
+                      <p className="text-[24px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500, color: '#e2e8f0' }}>{row.name}</p>
+                      <span className="text-[20px]" style={{ fontFamily: FONT_NUM, fontWeight: 600, color: pctColor(row.pct) }}>{row.pct}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Section 4: Map Rounds ────────────────────────────────────────────────────
+
+interface RoundMarket { threshold: string; over: number; under: number }
+
+function MapRoundsSection({ maps, rounds }: { maps: any[]; rounds: RoundMarket[] }) {
+  if (!maps.length) return null
+  return (
+    <div className="w-full bg-[#05060f] px-6 md:px-12 py-6">
+      <div className="max-w-[1184px] mx-auto flex flex-col gap-6">
+        <MapRoundsTable maps={maps} />
+        {rounds.length > 0 && (
+          <div className="flex flex-col lg:flex-row gap-6">
+            {rounds.map((r) => (
+              <div key={r.threshold} className="panel-bg rounded-[20px] border border-[#2b2b2b] p-[18px] flex flex-col gap-6 flex-1 min-w-0">
+                <p className="text-[16px] uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 600, color: '#BBFF14' }}>
+                  Rounds {r.threshold}
+                </p>
+                <div className="flex flex-col">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[24px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500, color: '#e2e8f0' }}>Over</p>
+                    <span className="text-[20px]" style={{ fontFamily: FONT_NUM, fontWeight: 600, color: pctColor(r.over) }}>{r.over}%</span>
+                  </div>
+                  <div className="w-full h-[1px] bg-[#2B2B2B] my-6" />
+                  <div className="flex items-center justify-between">
+                    <p className="text-[24px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500, color: '#e2e8f0' }}>Under</p>
+                    <span className="text-[20px]" style={{ fontFamily: FONT_NUM, fontWeight: 600, color: pctColor(r.under) }}>{r.under}%</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─── Section 5: Entries Archive ───────────────────────────────────────────────
+// TODO: retomar quando houver painel admin. Green/red vem do Turso (tabela EntryRecord),
+// não de estado local. Exibir apenas para admin, não para usuários do produto.
+//
+// function EntriesArchiveSection({ entries }: { entries: any[] }) {
+//   const [statuses, setStatuses] = useState<Record<number, EntryStatus>>({})
+//
+//   const toggle = (rank: number, status: 'green' | 'red') => {
+//     setStatuses((prev) => ({ ...prev, [rank]: prev[rank] === status ? 'default' : status }))
+//   }
+//
+//   if (!entries.length) return null
+//
+//   return (
+//     <div className="w-full bg-[#05060f] px-6 md:px-12 py-6">
+//       <div className="max-w-[1184px] mx-auto flex flex-col gap-6">
+//         <p className="text-[14px] text-white uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>
+//           Entries Archive
+//         </p>
+//         <div className="flex flex-col gap-4">
+//           {entries.map((entry) => {
+//             const n = normalizeEntry(entry)
+//             const status = statuses[n.rank] ?? 'default'
+//             const borderColor = status === 'green' ? '#32e601' : status === 'red' ? '#f40101' : '#2b2b2b'
+//             const confState = confidenceToState(n.confidence)
+//             return (
+//               <div
+//                 key={n.rank}
+//                 className="panel-bg rounded-[20px] p-[18px] flex items-center gap-6 transition-colors"
+//                 style={{ border: `1px solid ${borderColor}` }}
+//               >
+//                 <span className="text-[#4b5563] text-[13px] shrink-0 w-4 text-right" style={{ fontFamily: FONT_NUM }}>
+//                   {n.rank}
+//                 </span>
+//                 <div className="flex-1 min-w-0 flex flex-col gap-2">
+//                   <p className="text-white text-[20px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>{n.market_name}</p>
+//                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px]">
+//                     <span style={{ fontFamily: FONT_TEXT, color: '#6b7280' }}>
+//                       ODD <span style={{ fontFamily: FONT_NUM, color: 'white' }}>{n.odd.toFixed(2)}</span>
+//                     </span>
+//                     <span style={{ color: '#2b2b2b' }}>·</span>
+//                     <span style={{ fontFamily: FONT_TEXT, color: '#6b7280' }}>
+//                       STAKE <span style={{ fontFamily: FONT_NUM, color: 'white' }}>{n.stake}u</span>
+//                     </span>
+//                     <span style={{ color: '#2b2b2b' }}>·</span>
+//                     <span style={{ fontFamily: FONT_TEXT, color: '#6b7280' }}>
+//                       EDGE <span style={{ fontFamily: FONT_NUM, color: '#BBFF14' }}>+{n.edge.toFixed(1)}%</span>
+//                     </span>
+//                     <span style={{ color: '#2b2b2b' }}>·</span>
+//                     <span
+//                       className={`${dataStateClass[confState]} text-[11px]`}
+//                       style={{ padding: '2px 8px', borderRadius: 3, fontFamily: FONT_TEXT, fontWeight: 600 }}
+//                     >
+//                       {n.confidence === 'SEM EDGE' ? '—' : n.confidence}
+//                     </span>
+//                   </div>
+//                 </div>
+//                 <div className="flex gap-3 shrink-0">
+//                   <button
+//                     onClick={() => toggle(n.rank, 'green')}
+//                     className="flex items-center justify-center size-[38px] rounded-full transition-all"
+//                     style={{
+//                       background: status === 'green' ? '#32e601' : 'transparent',
+//                       border: '2px solid #32e601',
+//                       color: status === 'green' ? '#000' : '#32e601',
+//                       opacity: status === 'red' ? 0.25 : 1,
+//                       fontSize: 18,
+//                       lineHeight: 1,
+//                     }}
+//                     aria-label="Mark green"
+//                   >✓</button>
+//                   <button
+//                     onClick={() => toggle(n.rank, 'red')}
+//                     className="flex items-center justify-center size-[38px] rounded-full transition-all"
+//                     style={{
+//                       background: status === 'red' ? '#f40101' : 'transparent',
+//                       border: '2px solid #f40101',
+//                       color: status === 'red' ? '#fff' : '#f40101',
+//                       opacity: status === 'green' ? 0.25 : 1,
+//                       fontSize: 18,
+//                       lineHeight: 1,
+//                     }}
+//                     aria-label="Mark red"
+//                   >✗</button>
+//                 </div>
+//               </div>
+//             )
+//           })}
+//         </div>
+//       </div>
+//     </div>
+//   )
+// }
+
+// ─── Section 6: Scenarios ─────────────────────────────────────────────────────
+
+function ScenarioCard({ scenario }: { scenario: ScenarioData }) {
+  return (
+    <div className="panel-bg rounded-[20px] border border-[#2b2b2b] p-[18px] flex flex-col gap-6 flex-1 min-w-0">
+      <p className="text-[16px] uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 600, color: scenario.labelColor }}>
+        {scenario.label}
+      </p>
+      <div className="flex flex-col gap-3">
+        {scenario.percentage && (
+          <p className="text-[48px] leading-none" style={{ fontFamily: FONT_NUM, fontWeight: 600, color: 'white' }}>
+            {scenario.percentage}
+          </p>
+        )}
+        <p className="text-[16px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500, color: '#e2e8f0' }}>
+          {scenario.description}
+        </p>
+      </div>
+      {scenario.resultValue && (
+        <>
+          <div className="w-full h-[1px] bg-[#2B2B2B]" />
+          <div className="flex items-center justify-between">
+            <p className="text-[14px] uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 500, color: '#6b7280' }}>
+              {scenario.resultLabel || 'BALANCE'}
+            </p>
+            <p
+              className="text-[20px]"
+              style={{
+                fontFamily: FONT_NUM,
+                fontWeight: 600,
+                color: scenario.resultValue.startsWith('+') ? '#BBFF14' : scenario.resultValue.startsWith('-') ? '#f40101' : '#e2e8f0',
+              }}
+            >
+              {scenario.resultValue}
+            </p>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+function ScenariosSection({ scenarios }: { scenarios: ScenarioData[] }) {
+  if (!scenarios.length) return null
+  return (
+    <div className="w-full bg-[#05060f] px-6 md:px-12 py-6">
+      <div className="max-w-[1184px] mx-auto flex flex-col gap-6">
+        <p className="text-[14px] text-white uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>
+          Scenarios
+        </p>
+        <div className="flex flex-col lg:flex-row gap-6">
+          {scenarios.map((s) => (
+            <ScenarioCard key={s.id} scenario={s} />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Not Recommended ─────────────────────────────────────────────────────────
+
+function NotRecommendedSection({ items }: { items: NotRecItem[] }) {
+  if (!items.length) return null
+  return (
+    <div className="w-full bg-[#05060f] px-6 md:px-12 py-6 pb-12">
+      <div className="max-w-[1184px] mx-auto flex flex-col gap-6">
+        <p className="text-[14px] text-white uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>
+          Not Recommended
+        </p>
+        <div className="flex flex-col gap-4">
+          {items.map((item) => (
+            <div key={item.id} className="panel-bg rounded-[20px] border border-[#f40101] border-opacity-40 p-[18px] flex items-start gap-4">
+              <CloseIcon />
+              <div className="flex-1 min-w-0 flex flex-col gap-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-white text-[18px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>{item.label}</p>
+                  {item.pct && <p style={{ fontFamily: FONT_NUM, fontSize: 14, color: '#fd3d3d' }}>{item.pct}</p>}
+                </div>
+                {item.reason && <p className="text-[#898989] text-[13px]" style={{ fontFamily: FONT_TEXT }}>{item.reason}</p>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Gated Section ────────────────────────────────────────────────────────────
+
+function GatedSection() {
+  return (
+    <div
+      className="w-full flex items-center justify-center"
+      style={{
+        minHeight: '620px',
+        background: `linear-gradient(0deg, #000 0%, #B4B4B4 100%), linear-gradient(0deg, #D9FF00 0%, #D9FF00 100%), url('/bg_hero_home.jpg') lightgray 50% / cover no-repeat`,
+        backgroundBlendMode: 'multiply, hue, normal',
+      }}
+    >
+      <div className="flex flex-col items-center gap-6 px-12 py-24">
+        <div className="flex flex-col items-center gap-6">
+          <p className="text-5xl font-bold text-center" style={{ fontFamily: 'var(--font-sora), sans-serif' }}>
+            <span style={{ color: '#e8eaed' }}>Stop Guessing.</span><br />
+            <span style={{ color: '#d9ff00' }}>Start Knowing.</span>
+          </p>
+          <p className="text-xl font-semibold text-center" style={{ fontFamily: 'var(--font-sora), sans-serif', color: '#9ba3af', maxWidth: '314px' }}>
+            This in-depth tactical insight is reserved for Pro members.
+          </p>
+        </div>
+        <SignInCTA
+          style={{ fontFamily: 'var(--font-sora), sans-serif', fontWeight: 600, fontSize: '20px', textTransform: 'uppercase', color: '#000', background: 'radial-gradient(426.59% 426.59% at 50% 91.18%, #FFF 0%, #000 100%), #F3FAF6', border: '2px solid #FFF', borderRadius: '4px', padding: '24px 48px', cursor: 'pointer', letterSpacing: '0.02em' }}
+        />
+      </div>
+    </div>
+  )
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export default function DataPageV2({ analysis, coverImage, mode = 'full', teaserEntriesCount }: DataPageV2Props) {
+  if (!analysis) return null
+  const data: MatchAnalysis = analysis
+  const raw = data as any
+
+  // Teams
+  const headerMatch: string = data.header?.match ?? raw.match ?? ''
+  const parts = headerMatch.split(' vs ')
+  const teamA = parts[0]?.trim() ?? ''
+  const teamB = parts[1]?.trim() ?? ''
+
+  // Rankings
+  const rankEntries = Object.values(data.context?.rankings ?? {}) as Array<{ position: number }>
+  const rankA = rankEntries[0]?.position
+  const rankB = rankEntries[1]?.position
+
+  // Win probabilities — series_markets[0] primary (new schema), fallback to bo3_probabilities (old schema)
+  const seriesMarkets: Array<{ label: string; rows: Array<{ name: string; pct: number }> }> = raw.series_markets ?? []
+  const matchWinner = seriesMarkets[0]
+  const bo3Raw = raw.bo3_probabilities ?? {}
+  const bo3Summary = bo3Raw.summary ?? bo3Raw
+  const teamWinValues = Object.entries(bo3Summary)
+    .filter(([k, v]) => typeof v === 'number' && (k.endsWith('_total') || k.endsWith('_win')))
+    .map(([, v]) => v as number)
+  const naviTotal: number = bo3Raw.team_a_total ?? bo3Raw.navi_total ?? teamWinValues[0] ?? 0
+  const g2Total:   number = bo3Raw.team_b_total ?? bo3Raw.g2_total  ?? teamWinValues[1] ?? 0
+  const winA = matchWinner?.rows?.[0]?.pct ?? (Math.round((raw.model_probs?.team_a_win ?? 0) * 100) || naviTotal)
+  const winB = matchWinner?.rows?.[1]?.pct ?? (Math.round((raw.model_probs?.team_b_win ?? 0) * 100) || g2Total)
+
+  // Entries
+  const recStakesRaw: any[] = data.recommendations?.entries_with_stakes ?? []
+  const recRankSet = new Set(
+    recStakesRaw.map((r) => {
+      if (typeof r === 'string') { const m = r.match(/^#(\d+)/); return m ? parseInt(m[1]) : null }
+      return r?.rank ?? null
+    }).filter((v): v is number => v != null)
+  )
+  const allEntries: any[] = data.entries_ranked ?? []
+  const activeEntries = recRankSet.size > 0
+    ? allEntries.filter((e) => recRankSet.has(e.rank))
+    : allEntries.filter((e) => (e.confidence ?? '') !== 'SEM EDGE')
+  const topEntry = allEntries[0]
+
+  // Public bet
+  const publicSplit: Record<string, string | null> = raw.odds_movement?.public_split ?? {}
+  const publicEntries = (Object.entries(publicSplit) as [string, string | null][]).filter(([, v]) => v != null) as [string, string][]
+  const topPublic = publicEntries.sort((a, b) => parseFloat(b[1]) - parseFloat(a[1]))[0]
+  const publicBet: string | null = topPublic ? `${topPublic[1]} ${topPublic[0].toUpperCase()}` : null
+
+  // Stakes lookup & totals
+  const stakesByMarket = new Map<string, EntryStakeInfo>()
+  for (const e of activeEntries) {
+    const n = normalizeEntry(e)
+    stakesByMarket.set(n.market_name.toLowerCase().trim(), { odd: n.odd, stake: n.stake })
+  }
+  const totalInvestment = activeEntries.reduce((sum, e) => sum + normalizeEntry(e).stake, 0)
+  const potentialReturn = activeEntries.reduce((sum, e) => {
+    const n = normalizeEntry(e); return sum + (n.odd - 1) * n.stake
+  }, 0).toFixed(2)
+
+  // Teaser
+  const isTeaser = mode === 'teaser'
+  const activeEntriesCount = isTeaser ? (teaserEntriesCount ?? activeEntries.length) : activeEntries.length
+
+  // Map / round data
+  const mapAnalysis: any[] = raw.map_analysis ?? []
+  const roundMarkets: RoundMarket[] = raw.round_markets ?? []
+
+  // Header meta
+  const tournament: string = data.header?.event ?? raw.tournament ?? ''
+  const format: string     = data.header?.format ?? raw.format ?? 'BO3'
+  const matchDate: string  = data.header?.date ?? raw.match_date ?? ''
+
+  return (
+    <div className="min-h-screen w-full bg-[#05060f] flex flex-col">
+      <Header
+        teamA={teamA} teamB={teamB} rankA={rankA} rankB={rankB}
+        tournament={tournament} format={format} matchDate={matchDate}
+        entriesCount={activeEntriesCount} topEdge={topEntry?.edge ?? 0}
+        coverImage={coverImage ?? raw.header?.cover_image}
+      />
+      <WinProbSection
+        teamA={teamA} teamB={teamB} rankA={rankA} rankB={rankB}
+        winA={winA} winB={winB}
+        topEntry={topEntry}
+        activeEntriesCount={activeEntriesCount}
+        potentialReturn={potentialReturn}
+        publicBet={publicBet}
+        isTeaser={isTeaser}
+      />
+      <SeriesMarketsSection markets={seriesMarkets} />
+      <MapRoundsSection maps={mapAnalysis} rounds={roundMarkets} />
+      {isTeaser && <GatedSection />}
+    </div>
+  )
+}

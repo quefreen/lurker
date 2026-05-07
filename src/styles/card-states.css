@@ -1,0 +1,27 @@
+.card-neutral {
+  background: linear-gradient(180deg, #10111A 0%, #0C0D16 100%);
+}
+
+.card-yellow {
+  background:
+    radial-gradient(122.19% 122.19% at 50% 91.18%, #D9FF00 0%, #000 100%),
+    radial-gradient(237.87% 66.04% at 50% 36.9%, #090A05 55%, #D9FF00 100%),
+    linear-gradient(180deg, #10111A 0%, #0C0D16 17.31%);
+  background-blend-mode: color-dodge, color-dodge, normal;
+}
+
+.card-gold {
+  background:
+    radial-gradient(122.19% 122.19% at 50% 91.18%, #FFD900 0%, #000 100%),
+    radial-gradient(237.87% 66.04% at 50% 36.9%, #090A05 55%, #FFD900 100%),
+    linear-gradient(180deg, #10111A 0%, #0C0D16 17.31%);
+  background-blend-mode: color-dodge, color-dodge, normal;
+}
+
+.card-cyan {
+  background:
+    radial-gradient(122.19% 122.19% at 50% 91.18%, #60FFFA 0%, #000 100%),
+    radial-gradient(237.87% 66.04% at 50% 36.9%, #090A05 55%, #60FFFA 100%),
+    linear-gradient(180deg, #10111A 0%, #0C0D16 17.31%);
+  background-blend-mode: color-dodge, color-dodge, normal;
+}

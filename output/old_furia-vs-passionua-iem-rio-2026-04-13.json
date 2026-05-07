@@ -1,0 +1,490 @@
+{
+  "header": {
+    "match": "FURIA vs Passion UA",
+    "event": "IEM Rio 2026",
+    "format": "BO3",
+    "date": "2026-04-13T20:30:00Z",
+    "stage": "Fase de Grupos"
+  },
+  "context": {
+    "rankings": {
+      "team_a": {
+        "position": 3
+      },
+      "team_b": {
+        "position": 35
+      }
+    }
+  },
+  "bo3_probabilities": {
+    "team_a_total": 83.0,
+    "team_b_total": 17.0,
+    "over_2_5_maps": 31.0,
+    "score_2_0": 55.0,
+    "score_2_1": 28.0,
+    "score_1_2": 10.0,
+    "score_0_2": 7.0
+  },
+  "odds_movement": {
+    "public_split": {
+      "FURIA": "79%",
+      "Passion UA": "21%"
+    },
+    "opening": {
+      "team_a_ml": 1.121,
+      "team_b_ml": 5.79
+    },
+    "current": {
+      "team_a_ml": 1.121,
+      "team_b_ml": 5.79
+    }
+  },
+  "entries_ranked": [
+    {
+      "rank": 1,
+      "market_name": "PUA ML Map 2 (Passion UA vence mapa 2)",
+      "odd": 4.55,
+      "implied_prob": 22.0,
+      "estimated_prob": 27.0,
+      "edge": 5.0,
+      "confidence": "B",
+      "stake": 1,
+      "verdict": "O mapa 2 tende a ser a escolha da Passion UA (Overpass, 60%+ de pick rate). No seu mapa preferido, contra uma FURIA em form inconsistente recente, a PUA tem chance real de vencer um mapa e a odd de 4.55 sobreestima a dificuldade.",
+      "justification_points": [
+        "Passion UA usa Overpass em 60%+ das suas partidas — mapa 2 será quase certamente escolha deles.",
+        "FURIA venceu apenas 60% dos mapas de Overpass no dado histórico bruto; contra adversário preparado, essa margem cai.",
+        "FURIA teve 8L nas últimas 20 partidas, incluindo derrotas para Aurora (#22) e 3DMAX (#18), times de patamar equivalente ao PUA.",
+        "Odds de 4.55 implica 22% de chance — estimativa calibrada aponta 25-27%, pequena mas consistente vantagem.",
+        "Em partidas onde FURIA é favorita pesada, o mapa 2 frequentemente é jogado: Under 2.5 maps tem apenas 68.4% no-vig, indicando 31.6% de chance de 3 mapas ou que PUA vence um."
+      ]
+    },
+    {
+      "rank": 2,
+      "market_name": "Over 2.5 mapas",
+      "odd": 2.97,
+      "implied_prob": 33.7,
+      "estimated_prob": 37.0,
+      "edge": 3.3,
+      "confidence": "C",
+      "stake": 0.5,
+      "verdict": "A Passion UA tem força suficiente nos seus mapas preferidos (Overpass, Inferno, Anubis) para forçar um terceiro mapa com alguma regularidade. A odd de 2.97 oferece valor marginal.",
+      "justification_points": [
+        "Passion UA escolhe Overpass em 60% das partidas e tem WR histórico de 64.7% nesse mapa — even against top opposition, vence alguns.",
+        "Veto quase certamente gera 3 mapas distintos: FURIA bana Ancient, PUA bana Nuke/Mirage, cada time pica um mapa confortável + decider.",
+        "Modelo de Pinnacle (no-vig CS Market) indica 33.5% para over 2.5 — minha estimativa de 37% após ajuste de qualidade da oposição.",
+        "Edge marginal de +3.3%; posição pequena justificada pelo risco/retorno de 2.97."
+      ]
+    },
+    {
+      "rank": 3,
+      "market_name": "FURIA Under 12.5 rounds Map 1",
+      "odd": 4.28,
+      "implied_prob": 23.4,
+      "estimated_prob": 26.0,
+      "edge": 2.6,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "Edge insuficiente para recomendar. FURIA vencerá o mapa 1 na maioria das vezes, marcando 13+ rounds. Só entra se FURIA perder de forma limpa — evento relativamente raro.",
+      "justification_points": [
+        "FURIA vence Map 1 (seu pick) ~70% das vezes, marcando sempre 13+ rounds ao vencer.",
+        "Em derrotas, FURIA perde com score <13 em ~65% dos casos (não-OT), resultando em under 12.5.",
+        "P(Under 12.5) ≈ 0.30 × 0.65 + OT adjustment ≈ 26%. Implied: 23.4%. Edge +2.6% — abaixo do threshold de C (3%)."
+      ]
+    },
+    {
+      "rank": 4,
+      "market_name": "Correct Score FURIA 2-1",
+      "odd": 3.86,
+      "implied_prob": 25.9,
+      "estimated_prob": 28.0,
+      "edge": 2.1,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "Edge positivo de +2.1% mas abaixo do threshold de C (3%). Descartado.",
+      "justification_points": [
+        "Estimativa P(2-1 FURIA) = 28%, implied = 25.9%.",
+        "Edge marginal, insuficiente para posição."
+      ]
+    },
+    {
+      "rank": 5,
+      "market_name": "PUA ML Map 1 (Passion UA vence mapa 1)",
+      "odd": 3.97,
+      "implied_prob": 25.2,
+      "estimated_prob": 27.0,
+      "edge": 1.8,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "Edge marginalmente positivo mas insuficiente. A implied de 25.2% já reflete razoavelmente a chance real da PUA no Map 1 (mapa de escolha da FURIA).",
+      "justification_points": [
+        "FURIA pick Map 1 (Dust2 40% ou Inferno 35%): FURIA favorita com ~73% de chance.",
+        "Estimativa PUA: 27% no Map 1. Implied: 25.2%. Edge +1.8% — abaixo do threshold C.",
+        "Mercado de Map 1 é bem calibrado pela Pinnacle."
+      ]
+    },
+    {
+      "rank": 6,
+      "market_name": "PUA ML (serie, upset total)",
+      "odd": 5.79,
+      "implied_prob": 17.3,
+      "estimated_prob": 17.0,
+      "edge": -0.3,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "Praticamente sem edge. A odd de 5.79 reflete com precisão a chance real de 16-17% da Passion UA. Mercado bem calibrado aqui.",
+      "justification_points": [
+        "No-vig PUA série: 16.2%. Minha estimativa: 17%. Quase idêntico.",
+        "Passaporte para o upset depende de PUA vencer 2 mapas seguidos contra um time top-3.",
+        "Não há base analítica para apostar a esse preço."
+      ]
+    },
+    {
+      "rank": 7,
+      "market_name": "PUA Win At Least 1 Map",
+      "odd": 2.6,
+      "implied_prob": 38.5,
+      "estimated_prob": 37.0,
+      "edge": -1.5,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "Edge levemente negativo. PUA tem ~37% de chance de vencer ao menos 1 mapa (equivalente a P(serie nao ser 2-0 FURIA)).",
+      "justification_points": [
+        "P(PUA wins at least 1 map) = 1 - P(FURIA 2-0) ≈ 45%. Wait — recalibrated: P(FURIA 2-0) = 55%, so P(PUA ≥1 map) = 45%.",
+        "Implied: 38.5%. Estimativa: 45%. Edge = +6.5% — MAS isso assume minha estimativa de 55% p(2-0), que é mais conservadora que o mercado.",
+        "Se o mercado (Pinnacle) estiver correto (67% p(2-0)), então P(PUA ≥1 map) = 33% < 38.5% implied = edge negativo.",
+        "Incerteza alta neste mercado; não recomendado."
+      ]
+    },
+    {
+      "rank": 8,
+      "market_name": "Under 20.5 rounds Map 1",
+      "odd": 1.97,
+      "implied_prob": 50.8,
+      "estimated_prob": 48.0,
+      "edge": -2.8,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "Complementar ao Over 20.5. Edge negativo de -2.8%.",
+      "justification_points": [
+        "Estimativa under 20.5: 48%. Implied: 50.8%."
+      ]
+    },
+    {
+      "rank": 9,
+      "market_name": "Over 20.5 rounds Map 1",
+      "odd": 1.819,
+      "implied_prob": 55.0,
+      "estimated_prob": 52.0,
+      "edge": -3.0,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "Edge levemente negativo. Mapas de Dust2/Inferno tendem ao extremo: ou dominantes ou muito fechados, tornando Over 20.5 incerto.",
+      "justification_points": [
+        "Dust2 empírico FURIA: 61% over 20.5 (dados históricos).",
+        "Inferno empírico FURIA: 41% over 20.5.",
+        "Média ponderada com Overpass: ~52% over 20.5. Implied: 55%.",
+        "Edge -3.0%."
+      ]
+    },
+    {
+      "rank": 10,
+      "market_name": "Correct Score PUA 2-0 (upset total)",
+      "odd": 9.86,
+      "implied_prob": 10.1,
+      "estimated_prob": 7.0,
+      "edge": -3.1,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "Edge negativo. A odd de 9.86 parece atraente mas o evento é improvável demais para justificar.",
+      "justification_points": [
+        "Estimativa P(PUA 2-0) = 7%; implied = 10.1%.",
+        "Edge negativo de -3.1%."
+      ]
+    },
+    {
+      "rank": 11,
+      "market_name": "Correct Score PUA 2-1 (upset parcial)",
+      "odd": 7.51,
+      "implied_prob": 13.3,
+      "estimated_prob": 10.0,
+      "edge": -3.3,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "Edge negativo. Mercado superestima probabilidade de PUA vencer 2-1.",
+      "justification_points": [
+        "Estimativa P(PUA 2-1) = 10-11%; implied = 13.3%.",
+        "Edge negativo de -3.3%."
+      ]
+    },
+    {
+      "rank": 12,
+      "market_name": "FURIA Win At Least 1 Map",
+      "odd": 1.032,
+      "implied_prob": 96.9,
+      "estimated_prob": 93.0,
+      "edge": -3.9,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "Sem edge. Praticamente sem retorno e com edge negativo.",
+      "justification_points": [
+        "Estimated: 93% (1 - P(PUA 2-0 = 7%)). Implied: 96.9%.",
+        "Odds de 1.032 não oferecem valor real."
+      ]
+    },
+    {
+      "rank": 13,
+      "market_name": "FURIA ML (serie)",
+      "odd": 1.121,
+      "implied_prob": 89.2,
+      "estimated_prob": 83.0,
+      "edge": -6.2,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "FURIA é o favorito correto, mas a odd de 1.121 sobreprecia essa certeza. Modelo calibrado estima 83% — abaixo dos 89.2% implícitos. Sem valor.",
+      "justification_points": [
+        "FURIA #3 vs Passion UA #35: diferença de ranking expressiva, mas não 89% de gap.",
+        "FURIA perdeu 8 das últimas 20 partidas contra times competitivos; PUA tem vitórias vs FaZe e Eternal Fire.",
+        "IEM Rio é evento caseiro da FURIA (suporte da torcida), o que eleva performance, mas a odd já precifica isso e mais.",
+        "Odd implícita de 89.2% vs estimativa de 83%: edge negativo de -6.2%."
+      ]
+    },
+    {
+      "rank": 14,
+      "market_name": "FURIA ML Map 1",
+      "odd": 1.235,
+      "implied_prob": 81.0,
+      "estimated_prob": 73.0,
+      "edge": -8.0,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "Sem edge. FURIA vence Map 1 (seu pick) com frequência, mas 81% é excessivo.",
+      "justification_points": [
+        "Estimativa FURIA Map 1: 73%; implied: 81%.",
+        "Dust2 64.7% WR e Inferno 50% WR vs opponents de nível variado — qualidade ajustada vs PUA dá ~73%."
+      ]
+    },
+    {
+      "rank": 15,
+      "market_name": "Under 2.5 mapas",
+      "odd": 1.371,
+      "implied_prob": 72.9,
+      "estimated_prob": 63.0,
+      "edge": -9.9,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "A odd de Under 2.5 @ 1.371 é excessivamente precificada como favorita. Com PUA competitiva nos seus mapas, Over 2.5 tem chance real acima do que o mercado sugere.",
+      "justification_points": [
+        "Implied 72.9% para Under 2.5; estimativa calibrada 63-69%.",
+        "Risco de -9.9% de edge negativo.",
+        "Passion UA forçará 3 mapas com frequência considerável."
+      ]
+    },
+    {
+      "rank": 16,
+      "market_name": "FURIA Over 12.5 rounds Map 1",
+      "odd": 1.188,
+      "implied_prob": 84.2,
+      "estimated_prob": 74.0,
+      "edge": -10.2,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "Edge fortemente negativo. A odd de 1.188 é extremamente baixa para este mercado.",
+      "justification_points": [
+        "P(FURIA over 12.5) ≈ 74%: wins 73% + partial OT losses. Implied: 84.2%.",
+        "Edge de -10.2%."
+      ]
+    },
+    {
+      "rank": 17,
+      "market_name": "FURIA -1.5 mapas (vence 2-0)",
+      "odd": 1.487,
+      "implied_prob": 67.2,
+      "estimated_prob": 55.0,
+      "edge": -12.2,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "Edge fortemente negativo. 2-0 tem estimativa de ~55%, mas a odd implica 67.2%. Mercado sobreprecia a dominância de FURIA no sweep.",
+      "justification_points": [
+        "Estimated P(2-0 FURIA) = 55%, implied = 67.2%, edge = -12.2%.",
+        "Com mapa 2 sendo pick de PUA (Overpass), FURIA não deve varrer com facilidade.",
+        "Correct Score Market (no-vig) aponta 57.8% para 2-0 FURIA — mais próximo, mas ainda acima da minha estimativa."
+      ]
+    },
+    {
+      "rank": 18,
+      "market_name": "Correct Score FURIA 2-0",
+      "odd": 1.478,
+      "implied_prob": 67.7,
+      "estimated_prob": 55.0,
+      "edge": -12.7,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "Análogo ao handicap -1.5 mapas. Edge negativo de -12.7%. Descartado.",
+      "justification_points": [
+        "Mesmo mercado que FURIA -1.5 com odds praticamente idênticas.",
+        "Estimativa: 55%; implied: 67.7%."
+      ]
+    },
+    {
+      "rank": 19,
+      "market_name": "FURIA ML Map 2",
+      "odd": 1.186,
+      "implied_prob": 84.3,
+      "estimated_prob": 55.0,
+      "edge": -29.3,
+      "confidence": "SEM EDGE",
+      "stake": 0,
+      "verdict": "Edge fortemente negativo. Map 2 é pick da PUA (Overpass) onde eles têm WR histórico de 65%. Odd de 1.186 para FURIA no mapa adversário é injustificada.",
+      "justification_points": [
+        "Map 2 = PUA pick (Overpass 60% pick rate). PUA WR histórico de 64.7% nesse mapa.",
+        "Mesmo ajustando para qualidade, FURIA deve vencer Map 2 ~55% das vezes — implied 84.3% é extremamente alto.",
+        "Edge de -29.3%. Esta odd não faz sentido analítico; suspeita de erro de scraping ou mercado específico. Evitar."
+      ]
+    }
+  ],
+  "recommendations": {
+    "entries_with_stakes": [
+      {
+        "rank": 1,
+        "market_name": "PUA ML Map 2 (Passion UA vence mapa 2)",
+        "stake": 1
+      }
+    ],
+    "scenario_analysis": [
+      {
+        "name": "PROVAVEL",
+        "probability": 55.0,
+        "description": "FURIA vence 2-0. Domina o Map 1 (seu pick: Dust2 ou Inferno) e vence também o Map 2 da PUA. Serie rápida, PUA sem conseguir explorar Overpass com eficácia. PUA ML Map 2 perde.",
+        "entries_hit": [],
+        "entries_miss": [
+          "PUA ML Map 2 (Passion UA vence mapa 2)"
+        ],
+        "net_result": -1.0
+      },
+      {
+        "name": "BOM",
+        "probability": 28.0,
+        "description": "FURIA vence 2-1. PUA vence o Map 2 (Overpass, seu pick), mas FURIA vence Map 1 e o decider (Mirage, onde FURIA tem 70% WR). PUA ML Map 2 bate.",
+        "entries_hit": [
+          "PUA ML Map 2 (Passion UA vence mapa 2)"
+        ],
+        "entries_miss": [],
+        "net_result": 3.55
+      },
+      {
+        "name": "RUIM",
+        "probability": 10.0,
+        "description": "PUA vence 2-1. PUA exploita fraquezas recentes da FURIA, vence Map 2 (Overpass) e o decider. PUA ML Map 2 bate, série vai para FURIA 1-2 de forma surpresa.",
+        "entries_hit": [
+          "PUA ML Map 2 (Passion UA vence mapa 2)"
+        ],
+        "entries_miss": [],
+        "net_result": 3.55
+      },
+      {
+        "name": "PESSIMO",
+        "probability": 7.0,
+        "description": "PUA vence 2-0. Upset completo — PUA domina os dois primeiros mapas incluindo Map 2. PUA ML Map 2 bate, mas é o pior cenário para a série como um todo.",
+        "entries_hit": [
+          "PUA ML Map 2 (Passion UA vence mapa 2)"
+        ],
+        "entries_miss": [],
+        "net_result": 3.55
+      }
+    ]
+  },
+  "do_not_recommend": [
+    {
+      "market": "FURIA ML (serie)",
+      "edge": -6.2,
+      "reason": "Odd de 1.121 sobreprecia a vantagem da FURIA. Implied 89.2% vs estimativa 83%. Sem retorno real para o risco assumido."
+    },
+    {
+      "market": "Under 2.5 mapas",
+      "edge": -9.9,
+      "reason": "Mercado sobreestima a dominância sweep da FURIA. PUA tem força suficiente em seus mapas preferidos para forçar Map 3 com ~37% de probabilidade."
+    },
+    {
+      "market": "FURIA -1.5 mapas (handicap 2-0)",
+      "edge": -12.2,
+      "reason": "Equivalente a apostar FURIA 2-0 a odds de 1.487. Edge negativo de -12.2%. Descartado."
+    },
+    {
+      "market": "Correct Score FURIA 2-0",
+      "edge": -12.7,
+      "reason": "Análogo ao handicap -1.5. Odds de 1.478 com edge negativo de -12.7%."
+    },
+    {
+      "market": "FURIA ML Map 1",
+      "edge": -8.0,
+      "reason": "Odd de 1.235 implica 81% para FURIA no Map 1. Estimativa calibrada: 73%. Edge negativo de -8%."
+    },
+    {
+      "market": "FURIA ML Map 2",
+      "edge": -29.3,
+      "reason": "Odd de 1.186 para FURIA no Map 2 (que provavelmente é pick da PUA — Overpass) é analiticamente incoerente. PUA tem WR histórico de 65% no Overpass. Edge negativo severo de -29.3%. Possível erro de mercado ou scraping — evitar a qualquer custo."
+    },
+    {
+      "market": "FURIA Over 12.5 rounds Map 1",
+      "edge": -10.2,
+      "reason": "Odd de 1.188 implica 84.2% para FURIA marcar 13+ rounds. Estimativa: 74%. Edge negativo de -10.2%."
+    },
+    {
+      "market": "FURIA Under 12.5 rounds Map 1",
+      "edge": 2.6,
+      "reason": "Edge positivo de +2.6% mas abaixo do threshold mínimo de 3% (tier C). Insuficiente para justificar posição."
+    },
+    {
+      "market": "PUA ML Map 1",
+      "edge": 1.8,
+      "reason": "Edge positivo de +1.8%, abaixo do threshold de 3%. Mercado razoavelmente eficiente aqui."
+    },
+    {
+      "market": "PUA ML (serie, upset)",
+      "edge": -0.3,
+      "reason": "Mercado praticamente sem edge. No-vig PUA 16.2% vs estimativa 17%. Diferença insignificante."
+    },
+    {
+      "market": "PUA Win At Least 1 Map",
+      "edge": -1.5,
+      "reason": "Estimativa de 37-45% para PUA ganhar ao menos 1 mapa cria incerteza alta; implied 38.5% do mercado pode estar correto ou levemente elevado. Sem edge claro."
+    },
+    {
+      "market": "Correct Score FURIA 2-1",
+      "edge": 2.1,
+      "reason": "Edge de +2.1%, abaixo do threshold mínimo de 3%. Descartado."
+    },
+    {
+      "market": "Correct Score PUA 2-0 (upset total)",
+      "edge": -3.1,
+      "reason": "Edge negativo de -3.1%. Mercado overprices este resultado."
+    },
+    {
+      "market": "Correct Score PUA 2-1 (upset parcial)",
+      "edge": -3.3,
+      "reason": "Edge negativo de -3.3%. Estimativa 10-11% vs implied 13.3%."
+    },
+    {
+      "market": "FURIA Win At Least 1 Map",
+      "edge": -3.9,
+      "reason": "Odd de 1.032 não oferece retorno real. Edge negativo de -3.9%."
+    },
+    {
+      "market": "Over 20.5 rounds Map 1",
+      "edge": -3.0,
+      "reason": "Estimativa 52% vs implied 55%. Edge negativo de -3.0%."
+    },
+    {
+      "market": "Under 20.5 rounds Map 1",
+      "edge": -2.8,
+      "reason": "Complementar ao Over 20.5. Edge negativo de -2.8%."
+    }
+  ],
+  "alerts": [
+    "ALERTA — Mercado altamente eficiente: Pinnacle precificou este confronto com precisão. Apenas 2 entradas identificadas com edge positivo, ambas marginais (B e C).",
+    "ALERTA — FURIA ML Map 2 @ 1.186 parece analiticamente inconsistente: se Map 2 é pick da PUA (Overpass, WR 65%), FURIA ser favorita de 84.3% nesse mapa não é suportado pelos dados. Pode ser erro de scraping/odd — NÃO apostar no FURIA ML Map 2.",
+    "ALERTA — IEM Rio 2026 é evento caseiro da FURIA: suporte da torcida brasileira historicamente eleva a performance, o que justifica parte do favoritismo extremo do mercado.",
+    "ALERTA — Exposição conservadora total: 1.5 unidades (apenas entradas B e C). Gerenciamento de banca: não arriscar mais de 2% do bankroll total nesta partida.",
+    "ALERTA — Veto esperado: FURIA bana Ancient (95% das vezes), PUA bana Ancient/Nuke/Mirage. Mapas prováveis: Dust2 ou Inferno (FURIA pick), Overpass (PUA pick), Mirage como decider."
+  ]
+}

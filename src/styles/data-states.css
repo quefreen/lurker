@@ -1,0 +1,58 @@
+/* BRANCO → gradiente branco */
+.state-white {
+  border-radius: 4px;
+  border: 2px solid #FFF;
+  background:
+    radial-gradient(426.59% 426.59% at 50% 91.18%, #FFF 0%, #000 100%),
+    #F3FAF6;
+}
+
+/* AMARELO MARCA-TEXTO → gradiente amarelo */
+.state-yellow {
+  border-radius: 4px;
+  border: 2px solid #D9FF00;
+  background:
+    radial-gradient(426.59% 426.59% at 50% 91.18%, #D9FF00 0%, #000 62.02%),
+    #484C31;
+}
+
+/* VERDE → gradiente verde */
+.state-green {
+  border-radius: 4px;
+  border: 2px solid #32E601;
+  background:
+    radial-gradient(518.75% 518.75% at 50% 0%, #32E601 0%, #000 62.02%),
+    #FFF;
+}
+
+/* AMARELO ESCURO (alerta) → gradiente âmbar */
+.state-amber {
+  border-radius: 4px;
+  border: 2px solid #FFE23D;
+  background:
+    radial-gradient(426.59% 426.59% at 50% 91.18%, #FFE23D 0%, #000 100%),
+    #F3FAF6;
+}
+
+/* LARANJA → gradiente laranja */
+.state-orange {
+  border-radius: 4px;
+  border: 2px solid #F26500;
+  background:
+    radial-gradient(518.75% 518.75% at 50% 0%, #F46601 0%, #000 62.02%),
+    #FFF;
+}
+
+/* VERMELHO → gradiente vermelho */
+.state-red {
+  border-radius: 4px;
+  border: 2px solid #F40101;
+  background:
+    radial-gradient(518.75% 518.75% at 50% 0%, #F40101 0%, #000 62.02%),
+    #FFF;
+}
+
+/* PANEL background — replaces solid #0F1019 */
+.panel-bg {
+  background: linear-gradient(180deg, #10111A 0%, #0C0D16 17.31%);
+}
