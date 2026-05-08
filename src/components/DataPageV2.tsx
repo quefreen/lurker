@@ -428,19 +428,44 @@ function Header({ teamA, teamB, rankA, rankB, tournament, format, matchDate, ent
   )
 }
 
+// ─── Combo Bet Pill ───────────────────────────────────────────────────────────
+
+function ComboBetPill() {
+  return (
+    <span
+      style={{
+        fontFamily: FONT_TEXT,
+        fontWeight: 700,
+        fontSize: '10px',
+        letterSpacing: '0.08em',
+        textTransform: 'uppercase',
+        color: '#BBFF14',
+        border: '1px solid #BBFF14',
+        borderRadius: '999px',
+        padding: '2px 8px',
+        lineHeight: 1.4,
+        whiteSpace: 'nowrap',
+        flexShrink: 0,
+      }}
+    >
+      Combo Bet
+    </span>
+  )
+}
+
 // ─── Section 2: Win Probability + Best Opportunity ────────────────────────────
 
 interface WinProbSectionProps {
   teamA: string; teamB: string; rankA?: number; rankB?: number
   winA: number; winB: number
-  topEntry: any
+  topEntries: any[]
   activeEntriesCount: number
   potentialReturn: string
   publicBet: string | null
   isTeaser: boolean
 }
 
-function WinProbSection({ teamA, teamB, rankA, rankB, winA, winB, topEntry, activeEntriesCount, potentialReturn, publicBet, isTeaser }: WinProbSectionProps) {
+function WinProbSection({ teamA, teamB, rankA, rankB, winA, winB, topEntries, activeEntriesCount, potentialReturn, publicBet, isTeaser }: WinProbSectionProps) {
   return (
     <div className="w-full bg-[#05060f] px-6 md:px-12 py-6">
       <div className="max-w-[1184px] mx-auto flex flex-col lg:flex-row gap-6">
@@ -492,23 +517,50 @@ function WinProbSection({ teamA, teamB, rankA, rankB, winA, winB, topEntry, acti
           </div>
         ) : (
           <div
-            className="rounded-[20px] flex flex-col items-center flex-1 min-w-0 p-[18px] min-h-[240px]"
+            className="rounded-[20px] flex flex-col flex-1 min-w-0 p-[18px] min-h-[240px]"
             style={{ border: '1px solid #2B2B2B', background: 'radial-gradient(151.79% 151.79% at 50% 112.54%, #E6FF55 0%, #000 100%), radial-gradient(237.87% 66.04% at 50% 36.9%, rgba(9, 10, 5, 0.50) 55%, rgba(230, 255, 85, 0.50) 100%), linear-gradient(180deg, #10111A 0%, #0C0D16 17.31%)', backgroundBlendMode: 'color-dodge, color-dodge, normal' }}
           >
-            <p className="text-[16px] uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 600, color: '#BBFF14' }}>
-              Best Opportunity
+            <p className="text-[16px] uppercase text-center" style={{ fontFamily: FONT_TEXT, fontWeight: 600, color: '#BBFF14' }}>
+              {topEntries.length > 1 ? 'Best Opportunities' : 'Best Opportunity'}
             </p>
-            <div className="flex flex-col items-center justify-center flex-1 gap-[16px]">
-              <p className="text-white text-[32px] text-center leading-[1.2]" style={{ fontFamily: FONT_TEXT, fontWeight: 500, letterSpacing: '-0.41px' }}>
-                {topEntry?.market_name ?? topEntry?.market ?? '—'}
-              </p>
-              <div className="flex items-center gap-[5px] text-[18px]">
-                <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>ODD</span>
-                <span style={{ fontFamily: FONT_NUM, color: 'white' }}>{topEntry?.odd?.toFixed(2) ?? '—'}</span>
-                <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>·</span>
-                <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>STAKE</span>
-                <span style={{ fontFamily: FONT_NUM, color: 'white' }}>{topEntry?.stake ?? '—'}u</span>
-              </div>
+            <div className={`flex flex-1 ${topEntries.length > 1 ? 'flex-col gap-[8px] pt-[12px]' : 'flex-col items-center justify-center gap-[16px]'}`}>
+              {topEntries.length > 1 ? (
+                topEntries.map((entry, i) => (
+                  <div key={i} className="flex flex-col gap-[4px] flex-1 justify-center border-t border-[#ffffff15] pt-[8px] first:border-t-0 first:pt-0">
+                    <div className="flex items-center gap-[6px] flex-wrap">
+                      {entry?.combo_bet && <ComboBetPill />}
+                      <p className="text-white text-[20px] leading-[1.2]" style={{ fontFamily: FONT_TEXT, fontWeight: 500, letterSpacing: '-0.41px' }}>
+                        {entry?.market_name ?? entry?.market ?? '—'}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-[5px] text-[16px]">
+                      <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>ODD</span>
+                      <span style={{ fontFamily: FONT_NUM, color: 'white' }}>{entry?.odd?.toFixed(2) ?? '—'}</span>
+                      <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>·</span>
+                      <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>STAKE</span>
+                      <span style={{ fontFamily: FONT_NUM, color: 'white' }}>{entry?.stake ?? '—'}u</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <>
+                  {topEntries[0]?.combo_bet && (
+                    <div className="flex justify-center">
+                      <ComboBetPill />
+                    </div>
+                  )}
+                  <p className="text-white text-[32px] text-center leading-[1.2]" style={{ fontFamily: FONT_TEXT, fontWeight: 500, letterSpacing: '-0.41px' }}>
+                    {topEntries[0]?.market_name ?? topEntries[0]?.market ?? '—'}
+                  </p>
+                  <div className="flex items-center gap-[5px] text-[18px]">
+                    <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>ODD</span>
+                    <span style={{ fontFamily: FONT_NUM, color: 'white' }}>{topEntries[0]?.odd?.toFixed(2) ?? '—'}</span>
+                    <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>·</span>
+                    <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>STAKE</span>
+                    <span style={{ fontFamily: FONT_NUM, color: 'white' }}>{topEntries[0]?.stake ?? '—'}u</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
@@ -904,7 +956,7 @@ export default function DataPageV2({ analysis, coverImage, mode = 'full', teaser
       <WinProbSection
         teamA={teamA} teamB={teamB} rankA={rankA} rankB={rankB}
         winA={winA} winB={winB}
-        topEntry={topEntry}
+        topEntries={activeEntries}
         activeEntriesCount={activeEntriesCount}
         potentialReturn={potentialReturn}
         publicBet={publicBet}
