@@ -54,6 +54,7 @@ export interface MatchAnalysis {
   map_analysis: any;
   bo3_probabilities: any;
   series_markets?: any[];
+  round_markets?: any[];
   entries_ranked: Entry[];
   odds_movement: any;
   alerts: string[];
