@@ -53,6 +53,7 @@ export interface MatchAnalysis {
   veto_prediction: any;
   map_analysis: any;
   bo3_probabilities: any;
+  series_markets?: any[];
   entries_ranked: Entry[];
   odds_movement: any;
   alerts: string[];
