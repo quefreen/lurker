@@ -56,3 +56,59 @@
 .panel-bg {
   background: linear-gradient(180deg, #10111A 0%, #0C0D16 17.31%);
 }
+
+/* NAV LINK — white default, gradient text on hover */
+.nav-link {
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.nav-link:hover {
+  background: linear-gradient(180deg, #D9FF00 17.31%, #0F100A 107.69%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  opacity: 1;
+}
+
+/* CARD HOVER — gradient expand effect, contained by overflow: hidden */
+.card-shimmer {
+  overflow: hidden;
+}
+
+.card-shimmer > div {
+  transition: transform 0.7s ease;
+  will-change: transform;
+}
+
+.card-shimmer:hover > div {
+  transform: scale(1.04);
+}
+
+/* BOTÃO AMARELO CTA — shine sweep on hover via ::before, initial state unchanged */
+.btn-yellow-lurker {
+  border-radius: 4px;
+  border: 2px solid #D9FF00;
+  background: radial-gradient(518.75% 518.75% at 50% 0%, #D9FF00 0%, #17190F 62.02%), #FFF;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-yellow-lurker::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: skewX(-15deg);
+  transition: left 0.9s ease;
+  pointer-events: none;
+}
+
+.btn-yellow-lurker:hover::before {
+  left: 160%;
+}

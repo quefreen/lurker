@@ -3,7 +3,7 @@
 import '@/styles/data-states.css'
 import { useState } from 'react'
 import { SignInCTA } from '@/components/SignInCTA'
-import { MapRoundsTable } from '@/components/MapRoundsTable'
+import { SiteFooter } from '@/components/SiteFooter'
 import { MatchAnalysis, Entry, CardState } from '@/lib/types'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -382,45 +382,51 @@ interface HeaderProps {
 
 function Header({ teamA, teamB, rankA, rankB, tournament, format, matchDate, entriesCount, topEdge, coverImage }: HeaderProps) {
   return (
-    <div className="w-full bg-[#05060f] px-6 md:px-12 py-6">
-      <div className="max-w-[1184px] mx-auto">
+    <div className="w-full bg-[#0F100A] px-6 md:px-12 py-6">
+      <div className="max-w-[996px] mx-auto">
         <div
-          className="panel-bg rounded-[4px] border border-[#2b2b2b] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
-          style={coverImage ? { backgroundImage: `url('${coverImage}')`, backgroundSize: 'cover', backgroundPosition: 'center center' } : undefined}
+          className="border border-[#2c2c2c] p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+          style={{
+            background: coverImage
+              ? `url('${coverImage}') center/cover`
+              : 'linear-gradient(to bottom, rgba(31,33,20,0.8) 0%, rgba(15,16,10,0.8) 57.21%)',
+          }}
         >
           <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <span className="text-[#b5b5b5] text-[12px]" style={{ fontFamily: FONT_TEXT }}>{tournament}</span>
-              <div className="bg-white rounded-[2px] px-[6px] py-[2px]">
-                <span className="text-[#0a0b14] text-[12px]" style={{ fontFamily: FONT_TEXT }}>{format}</span>
+            <div className="flex items-center gap-[51px]">
+              <span className="text-sm font-semibold text-[#d9ff00]" style={{ fontFamily: FONT_TEXT }}>{tournament}</span>
+              <div className="flex items-center gap-2">
+                <div className="bg-white rounded-[2px] px-[6px] py-[2px]">
+                  <span className="text-[#0a0b14] text-[12px] font-medium" style={{ fontFamily: FONT_TEXT }}>{format}</span>
+                </div>
+                {matchDate && (
+                  <span className="text-[#b5b5b5] text-[12px]" style={{ fontFamily: FONT_TEXT }}>{formatMatchDate(matchDate)}</span>
+                )}
               </div>
-              {matchDate && (
-                <span className="text-[#b5b5b5] text-[12px]" style={{ fontFamily: FONT_TEXT }}>{formatMatchDate(matchDate)}</span>
-              )}
             </div>
             <div className="flex items-end gap-3">
               <div>
-                {rankA != null && <p className="text-[#666] text-[12px]" style={{ fontFamily: FONT_NUM }}>#{rankA}</p>}
-                <p className="text-white text-[28px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>{teamA}</p>
+                {rankA != null && <p className="text-white text-[12px]" style={{ fontFamily: FONT_NUM }}>#{rankA}</p>}
+                <p className="text-white text-2xl" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>{teamA}</p>
               </div>
               <span className="text-[#adadad] text-[12px] pb-[5px]" style={{ fontFamily: FONT_TEXT }}>vs</span>
               <div>
-                {rankB != null && <p className="text-[#666] text-[12px]" style={{ fontFamily: FONT_NUM }}>#{rankB}</p>}
-                <p className="text-white text-[28px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>{teamB}</p>
+                {rankB != null && <p className="text-white text-[12px]" style={{ fontFamily: FONT_NUM }}>#{rankB}</p>}
+                <p className="text-white text-2xl" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>{teamB}</p>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-6">
+            <div className="flex flex-col items-center justify-center gap-1 p-[18px] rounded bg-[#0F100A] border border-[#2b2b2b]">
+              <p className="text-white text-xs font-medium" style={{ fontFamily: FONT_TEXT }}>ENTRIES</p>
+              <p className="text-white text-xl font-semibold" style={{ fontFamily: FONT_TEXT }}>{entriesCount} EV+</p>
+            </div>
             {topEdge >= 0 && (
-              <div className="panel-bg border border-[#1e2028] rounded-[6px] flex flex-col items-center justify-center px-5 py-4 min-w-[80px] gap-1">
-                <p className="text-[11px] uppercase tracking-widest" style={{ fontFamily: FONT_TEXT, fontWeight: 500, color: '#6b7280' }}>EDGE</p>
-                <p className="text-[22px]" style={{ fontFamily: FONT_NUM, fontWeight: 600, color: '#BBFF14' }}>+{topEdge.toFixed(1)}%</p>
+              <div className="flex flex-col items-center justify-center gap-1 p-[18px] rounded bg-[#0F100A] border border-[#2b2b2b]">
+                <p className="text-white text-xs font-medium" style={{ fontFamily: FONT_TEXT }}>EDGE</p>
+                <p className="text-white text-xl font-semibold" style={{ fontFamily: FONT_NUM }}>+{topEdge.toFixed(1)}%</p>
               </div>
             )}
-            <div className="panel-bg border border-[#1e2028] rounded-[6px] flex flex-col items-center justify-center px-5 py-4 min-w-[80px] gap-1">
-              <p className="text-[11px] uppercase tracking-widest" style={{ fontFamily: FONT_TEXT, fontWeight: 500, color: '#6b7280' }}>EV+</p>
-              <p className="text-white text-[22px]" style={{ fontFamily: FONT_TEXT, fontWeight: 600 }}>{entriesCount} Entry</p>
-            </div>
           </div>
         </div>
       </div>
@@ -467,119 +473,153 @@ interface WinProbSectionProps {
 
 function WinProbSection({ teamA, teamB, rankA, rankB, winA, winB, topEntries, activeEntriesCount, potentialReturn, publicBet, isTeaser }: WinProbSectionProps) {
   return (
-    <div className="w-full bg-[#05060f] px-6 md:px-12 py-6">
-      <div className="max-w-[1184px] mx-auto flex flex-col lg:flex-row gap-6">
+    <div className="w-full bg-[#0F100A] px-6 md:px-12 py-6">
+      <div className="max-w-[996px] mx-auto">
+        <div className="flex items-stretch gap-6 h-[360px]">
 
-        {/* Win Probability */}
-        <div className="panel-bg rounded-[20px] border border-[#2b2b2b] p-[18px] flex flex-col gap-6 flex-1 min-w-0">
-          <p className="text-[16px] uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 600, color: '#BBFF14' }}>Win Probability</p>
-          <div className="flex items-end justify-between w-full">
-            <div>
-              {rankA != null && <p className="text-[#666] text-[12px]" style={{ fontFamily: FONT_NUM }}>#{rankA}</p>}
-              <p className="text-white text-[20px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>{teamA.toUpperCase()}</p>
+          {/* Win Probability */}
+          <div className="flex flex-col gap-6 flex-1 min-w-0">
+            <p className="text-sm font-semibold text-[#d9ff00]" style={{ fontFamily: FONT_TEXT }}>Win probability</p>
+            <div
+              className="flex flex-col flex-1 px-6 py-8 rounded-[20px] border-2 border-[#2b2b2b]"
+              style={{ background: 'linear-gradient(to bottom, rgba(31,33,20,0.8) 0%, rgba(15,16,10,0.8) 57.21%)' }}
+            >
+              <div className="flex items-start justify-between w-full">
+                <div>
+                  {rankA != null && <p className="text-xs font-medium text-[#d6d6d6]" style={{ fontFamily: FONT_NUM }}>#{rankA}</p>}
+                  <p className="text-white text-xl font-medium" style={{ fontFamily: FONT_TEXT }}>{teamA}</p>
+                </div>
+                <div className="text-right">
+                  {rankB != null && <p className="text-xs font-medium text-[#d6d6d6]" style={{ fontFamily: FONT_NUM }}>#{rankB}</p>}
+                  <p className="text-white text-xl font-medium" style={{ fontFamily: FONT_TEXT }}>{teamB}</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between w-full mt-6">
+                <span className="text-[32px] font-semibold" style={{ fontFamily: FONT_NUM, color: winA >= winB ? '#d9ff00' : '#fff1f1' }}>{winA}%</span>
+                <span className="text-[32px]" style={{ fontFamily: FONT_NUM, color: winB > winA ? '#d9ff00' : '#fff1f1' }}>{winB}%</span>
+              </div>
+              <div className="flex h-[72px] w-full mt-auto">
+                {winA >= winB ? (
+                  <>
+                    <div className="state-yellow shrink-0" style={{ width: `${winA}%`, borderRight: 'none', borderRadius: '4px 0 0 4px' }} />
+                    <div className="state-white flex-1"   style={{ borderLeft:  'none', borderRadius: '0 4px 4px 0' }} />
+                  </>
+                ) : (
+                  <>
+                    <div className="state-white shrink-0" style={{ width: `${winA}%`, borderRight: 'none', borderRadius: '4px 0 0 4px' }} />
+                    <div className="state-yellow flex-1"  style={{ borderLeft:  'none', borderRadius: '0 4px 4px 0' }} />
+                  </>
+                )}
+              </div>
             </div>
-            <div className="text-right">
-              {rankB != null && <p className="text-[#666] text-[12px]" style={{ fontFamily: FONT_NUM }}>#{rankB}</p>}
-              <p className="text-white text-[20px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>{teamB.toUpperCase()}</p>
-            </div>
           </div>
-          <div className="flex items-center justify-between w-full">
-            <span className="text-[36px]" style={{ fontFamily: FONT_NUM, fontWeight: 600, color: winA >= winB ? '#BBFF14' : 'white' }}>{winA}%</span>
-            <span className="text-[32px]" style={{ fontFamily: FONT_NUM, fontWeight: 400, color: winB > winA ? '#BBFF14' : 'white' }}>{winB}%</span>
-          </div>
-          <div className="flex h-[72px] w-full">
-            {winA >= winB ? (
-              <>
-                <div className="state-yellow shrink-0" style={{ width: `${winA}%`, borderRight: 'none', borderRadius: '4px 0 0 4px' }} />
-                <div className="state-white flex-1"   style={{ borderLeft:  'none', borderRadius: '0 4px 4px 0' }} />
-              </>
-            ) : (
-              <>
-                <div className="state-white shrink-0" style={{ width: `${winA}%`, borderRight: 'none', borderRadius: '4px 0 0 4px' }} />
-                <div className="state-yellow flex-1"  style={{ borderLeft:  'none', borderRadius: '0 4px 4px 0' }} />
-              </>
-            )}
-          </div>
-        </div>
 
-        {/* Best Opportunity */}
-        {isTeaser ? (
-          <div
-            className="rounded-[20px] flex flex-col justify-between gap-6 p-4 flex-1 min-w-0 min-h-[240px]"
-            style={{ border: '2px solid #2B2B2B', backgroundImage: "url('/card_paybutton.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
-          >
-            <p style={{ fontFamily: FONT_NUM, fontWeight: 600, fontSize: '32px', color: '#ffffff', textTransform: 'uppercase', lineHeight: 1.1 }}>
-              Reveal<br />Best<br />Opportunity
-            </p>
-            <SignInCTA
-              style={{ fontFamily: FONT_NUM, fontWeight: 600, fontSize: '20px', textTransform: 'uppercase', color: '#000', background: 'radial-gradient(426.59% 426.59% at 50% 91.18%, #FFF 0%, #000 100%), #F3FAF6', border: '2px solid #FFF', borderRadius: '4px', padding: '16px 32px', cursor: 'pointer', width: '100%' }}
-            />
-          </div>
-        ) : (
-          <div
-            className="rounded-[20px] flex flex-col flex-1 min-w-0 p-[18px] min-h-[240px]"
-            style={{ border: '1px solid #2B2B2B', background: 'radial-gradient(151.79% 151.79% at 50% 112.54%, #E6FF55 0%, #000 100%), radial-gradient(237.87% 66.04% at 50% 36.9%, rgba(9, 10, 5, 0.50) 55%, rgba(230, 255, 85, 0.50) 100%), linear-gradient(180deg, #10111A 0%, #0C0D16 17.31%)', backgroundBlendMode: 'color-dodge, color-dodge, normal' }}
-          >
-            <p className="text-[16px] uppercase text-center" style={{ fontFamily: FONT_TEXT, fontWeight: 600, color: '#BBFF14' }}>
+          {/* Best Opportunity */}
+          <div className="flex flex-col gap-6 flex-1 min-w-0">
+            <p className="text-sm font-semibold text-[#d9ff00]" style={{ fontFamily: FONT_TEXT }}>
               {topEntries.length > 1 ? 'Best Opportunities' : 'Best Opportunity'}
             </p>
-            <div className={`flex flex-1 ${topEntries.length > 1 ? 'flex-col gap-[8px] pt-[12px]' : 'flex-col items-center justify-center gap-[16px]'}`}>
-              {topEntries.length > 1 ? (
-                topEntries.map((entry, i) => (
-                  <div key={i} className="flex flex-col gap-[4px] flex-1 justify-center border-t border-[#ffffff15] pt-[8px] first:border-t-0 first:pt-0">
-                    <div className="flex items-center gap-[6px] flex-wrap">
+            {isTeaser ? (
+              <div
+                className="rounded-xl flex flex-col justify-between gap-6 p-4 flex-1 min-h-[314px]"
+                style={{ border: '2px solid #2B2B2B', backgroundImage: "url('/card_paybutton.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+              >
+                <p style={{ fontFamily: FONT_NUM, fontWeight: 600, fontSize: '32px', color: '#ffffff', textTransform: 'uppercase', lineHeight: 1.1 }}>
+                  Reveal<br />Best<br />Opportunity
+                </p>
+                <SignInCTA
+                  style={{ fontFamily: FONT_NUM, fontWeight: 600, fontSize: '20px', textTransform: 'uppercase', color: '#000', background: 'radial-gradient(426.59% 426.59% at 50% 91.18%, #FFF 0%, #000 100%), #F3FAF6', border: '2px solid #FFF', borderRadius: '4px', padding: '16px 32px', cursor: 'pointer', width: '100%' }}
+                />
+              </div>
+            ) : topEntries.length === 1 ? (
+              /* 1 entry — gradient card, centered */
+              <div
+                className="flex flex-col items-center justify-center flex-1 overflow-hidden gap-[6px] px-[18px] py-8"
+                style={{ borderRadius: '12px', border: '1px solid #2B2B2B', background: 'radial-gradient(80.22% 80.22% at 50% 112.54%, #E6FF55 0%, #0F100A 100%), radial-gradient(252.05% 69.98% at 50% 32.96%, rgba(15, 16, 10, 0.50) 55%, rgba(230, 255, 85, 0.50) 100%), linear-gradient(180deg, #0F100A 0%, #0F100A 17.31%)', backgroundBlendMode: 'color-dodge, color-dodge, normal' }}
+              >
+                {topEntries[0]?.combo_bet && <ComboBetPill />}
+                <p className="text-white text-[32px] font-medium text-center leading-[1.2]" style={{ fontFamily: FONT_TEXT }}>
+                  {topEntries[0]?.market_name ?? topEntries[0]?.market ?? '—'}
+                </p>
+                <div className="flex items-center gap-[5px]">
+                  <span className="text-sm font-light" style={{ fontFamily: FONT_TEXT, color: '#c0c0c0' }}>ODD</span>
+                  <span className="text-sm font-semibold text-white" style={{ fontFamily: FONT_NUM }}>{topEntries[0]?.odd?.toFixed(2) ?? '—'}</span>
+                  <span style={{ color: '#94a3b8' }}>·</span>
+                  <span className="text-sm font-light" style={{ fontFamily: FONT_TEXT, color: '#c0c0c0' }}>STAKE</span>
+                  <span className="text-sm font-semibold text-white" style={{ fontFamily: FONT_NUM }}>{topEntries[0]?.stake ?? '—'}u</span>
+                </div>
+              </div>
+            ) : topEntries.length === 2 ? (
+              /* 2 entries — 2 stacked rows, flex-col center each */
+              <div className="flex flex-col flex-1 min-h-[314px]">
+                {topEntries.map((entry, i) => (
+                  <div key={i} className="flex flex-col justify-center items-center flex-1 overflow-hidden gap-8 px-[18px] py-8" style={{ borderRadius: '8px', border: '2px solid #0F100A', background: 'radial-gradient(108.4% 65.92% at 50% 100.32%, #E6FF55 0%, #000 100%), radial-gradient(384.26% 106.69% at 50% 107.01%, #090A05 55%, #E6FF55 100%), #0F100A', backgroundBlendMode: 'color-dodge, color-dodge, normal' }}>
+                    <div className="flex justify-start items-center gap-3">
+                      <p className="text-xl font-medium text-white shrink-0" style={{ fontFamily: FONT_TEXT }}>{i + 1}</p>
+                      <div className="flex flex-col gap-[6px]">
+                        {entry?.combo_bet && <ComboBetPill />}
+                        <p className="text-xl font-medium text-white" style={{ fontFamily: FONT_TEXT }}>
+                          {entry?.market_name ?? entry?.market ?? '—'}
+                        </p>
+                        <div className="flex items-center gap-[5px]">
+                          <span className="text-sm font-light" style={{ fontFamily: FONT_TEXT, color: '#c0c0c0' }}>ODD</span>
+                          <span className="text-sm font-semibold text-white" style={{ fontFamily: FONT_NUM }}>{entry?.odd?.toFixed(2) ?? '—'}</span>
+                          <span style={{ color: '#94a3b8' }}>·</span>
+                          <span className="text-sm font-light" style={{ fontFamily: FONT_TEXT, color: '#c0c0c0' }}>STAKE</span>
+                          <span className="text-sm font-semibold text-white" style={{ fontFamily: FONT_NUM }}>{entry?.stake ?? '—'}u</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              /* 3 entries — 3 stacked rows, flex-row each */
+              <div className="flex flex-col flex-1 min-h-[314px]">
+                {topEntries.slice(0, 3).map((entry, i) => (
+                  <div key={i} className="flex justify-start items-center flex-1 overflow-hidden gap-3 p-8" style={{ borderRadius: '8px', border: '2px solid #0F100A', background: 'radial-gradient(108.4% 65.92% at 50% 100.32%, #E6FF55 0%, #000 100%), radial-gradient(384.26% 106.69% at 50% 107.01%, #090A05 55%, #E6FF55 100%), #0F100A', backgroundBlendMode: 'color-dodge, color-dodge, normal' }}>
+                    <p className="text-xl font-medium text-white shrink-0" style={{ fontFamily: FONT_TEXT }}>{i + 1}</p>
+                    <div className="flex flex-col justify-center items-start gap-[6px]">
                       {entry?.combo_bet && <ComboBetPill />}
-                      <p className="text-white text-[20px] leading-[1.2]" style={{ fontFamily: FONT_TEXT, fontWeight: 500, letterSpacing: '-0.41px' }}>
+                      <p className="text-xl font-medium text-left text-white" style={{ fontFamily: FONT_TEXT }}>
                         {entry?.market_name ?? entry?.market ?? '—'}
                       </p>
-                    </div>
-                    <div className="flex items-center gap-[5px] text-[16px]">
-                      <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>ODD</span>
-                      <span style={{ fontFamily: FONT_NUM, color: 'white' }}>{entry?.odd?.toFixed(2) ?? '—'}</span>
-                      <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>·</span>
-                      <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>STAKE</span>
-                      <span style={{ fontFamily: FONT_NUM, color: 'white' }}>{entry?.stake ?? '—'}u</span>
+                      <div className="flex items-center gap-[5px]">
+                        <span className="text-sm font-light" style={{ fontFamily: FONT_TEXT, color: '#c0c0c0' }}>ODD</span>
+                        <span className="text-sm font-semibold text-white" style={{ fontFamily: FONT_NUM }}>{entry?.odd?.toFixed(2) ?? '—'}</span>
+                        <span style={{ color: '#94a3b8' }}>·</span>
+                        <span className="text-sm font-light" style={{ fontFamily: FONT_TEXT, color: '#c0c0c0' }}>STAKE</span>
+                        <span className="text-sm font-semibold text-white" style={{ fontFamily: FONT_NUM }}>{entry?.stake ?? '—'}u</span>
+                      </div>
                     </div>
                   </div>
-                ))
-              ) : (
-                <>
-                  {topEntries[0]?.combo_bet && (
-                    <div className="flex justify-center">
-                      <ComboBetPill />
-                    </div>
-                  )}
-                  <p className="text-white text-[32px] text-center leading-[1.2]" style={{ fontFamily: FONT_TEXT, fontWeight: 500, letterSpacing: '-0.41px' }}>
-                    {topEntries[0]?.market_name ?? topEntries[0]?.market ?? '—'}
-                  </p>
-                  <div className="flex items-center gap-[5px] text-[18px]">
-                    <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>ODD</span>
-                    <span style={{ fontFamily: FONT_NUM, color: 'white' }}>{topEntries[0]?.odd?.toFixed(2) ?? '—'}</span>
-                    <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>·</span>
-                    <span style={{ fontFamily: FONT_TEXT, color: '#94a3b8' }}>STAKE</span>
-                    <span style={{ fontFamily: FONT_NUM, color: 'white' }}>{topEntries[0]?.stake ?? '—'}u</span>
-                  </div>
-                </>
-              )}
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Pick Summary */}
+          <div className="flex flex-col gap-6 flex-1 min-w-0">
+            <p className="text-sm font-semibold text-[#d9ff00]" style={{ fontFamily: FONT_TEXT }}>Pick Summary</p>
+            <div
+              className="flex flex-col gap-3 p-[18px] rounded-xl border-2 border-[#2b2b2b]"
+              style={{ background: 'linear-gradient(to bottom, rgba(31,33,20,0.8) 0%, rgba(15,16,10,0.8) 57.21%)' }}
+            >
+              <div className="state-white min-h-[64px] flex items-center justify-center w-full p-6">
+                <p className="text-black uppercase text-[20px]" style={{ fontFamily: FONT_TEXT, fontWeight: 600 }}>{activeEntriesCount} Entry</p>
+              </div>
+              <div className="state-yellow min-h-[64px] flex items-center justify-between w-full p-6">
+                <p className="text-black uppercase text-[18px]" style={{ fontFamily: FONT_TEXT, fontWeight: 600 }}>POTENTIAL RETURN</p>
+                <p className="text-black text-[20px]" style={{ fontFamily: FONT_NUM, fontWeight: 600 }}>{isTeaser ? '—' : `${potentialReturn}u`}</p>
+              </div>
+              <div className="state-green min-h-[64px] flex items-center justify-between w-full p-6">
+                <p className="text-black uppercase text-[18px]" style={{ fontFamily: FONT_TEXT, fontWeight: 600 }}>PUBLIC BET</p>
+                <p className="text-black text-[20px]" style={{ fontFamily: FONT_TEXT, fontWeight: 600 }}>{publicBet ?? '—'}</p>
+              </div>
             </div>
           </div>
-        )}
 
-        {/* 3-pills */}
-        <div className="panel-bg rounded-[20px] border border-[#2b2b2b] p-[18px] flex flex-col gap-[10px] flex-1 min-w-0 min-h-[240px]">
-          <div className="state-white flex-1 min-h-[64px] flex items-center justify-center w-full">
-            <p className="text-black uppercase text-[20px]" style={{ fontFamily: FONT_TEXT, fontWeight: 600 }}>{activeEntriesCount} EV+ Entry</p>
-          </div>
-          <div className="state-yellow flex-1 min-h-[64px] flex items-center justify-between px-6 w-full">
-            <p className="text-black uppercase text-[18px]" style={{ fontFamily: FONT_TEXT, fontWeight: 600 }}>POTENTIAL RETURN</p>
-            <p className="text-black text-[20px]" style={{ fontFamily: FONT_NUM, fontWeight: 600 }}>{isTeaser ? '—' : `${potentialReturn}u`}</p>
-          </div>
-          <div className="state-green flex-1 min-h-[64px] flex items-center justify-between px-6 w-full">
-            <p className="text-black uppercase text-[18px]" style={{ fontFamily: FONT_TEXT, fontWeight: 600 }}>PUBLIC BET</p>
-            <p className="text-black text-[20px]" style={{ fontFamily: FONT_TEXT, fontWeight: 600 }}>{publicBet ?? '—'}</p>
-          </div>
         </div>
-
       </div>
     </div>
   )
@@ -589,31 +629,71 @@ function WinProbSection({ teamA, teamB, rankA, rankB, winA, winB, topEntries, ac
 
 function SeriesMarketsSection({ markets }: { markets: Array<{ label: string; rows: Array<{ name: string; pct: number }> }> }) {
   if (!markets.length) return null
+
+  const leftMarkets = markets.filter(m => !m.label.toLowerCase().includes('handicap')).slice(0, 2)
+  const handicapMarket = markets.find(m => m.label.toLowerCase().includes('handicap'))
+
   return (
-    <div className="w-full bg-[#05060f] px-6 md:px-12 py-6">
-      <div className="max-w-[1184px] mx-auto flex flex-col gap-6">
-        <p className="text-[14px] text-white uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>
-          Series Markets
-        </p>
-        <div className="flex flex-col lg:flex-row gap-6">
-          {markets.map((market) => (
-            <div key={market.label} className="panel-bg rounded-[20px] border border-[#2b2b2b] p-[18px] flex flex-col gap-6 flex-1 min-w-0">
-              <p className="text-[16px] uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 600, color: '#BBFF14' }}>
-                {market.label}
-              </p>
-              <div className="flex flex-col">
-                {market.rows.map((row, i) => (
-                  <div key={row.name}>
-                    {i > 0 && <div className="w-full h-[1px] bg-[#2B2B2B] my-6" />}
-                    <div className="flex items-center justify-between">
-                      <p className="text-[24px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500, color: '#e2e8f0' }}>{row.name}</p>
-                      <span className="text-[20px]" style={{ fontFamily: FONT_NUM, fontWeight: 600, color: pctColor(row.pct) }}>{row.pct}%</span>
-                    </div>
+    <div className="w-full bg-[#0F100A] px-6 md:px-12 py-6">
+      <div className="max-w-[996px] mx-auto">
+        <div className="grid grid-cols-3 gap-6">
+
+          {/* Left col 1 — two small stacked cards */}
+          <div className="flex flex-col gap-8">
+            {leftMarkets.map((market) => (
+              <div key={market.label} className="flex flex-col gap-3">
+                <p className="text-sm font-semibold text-[#d9ff00]" style={{ fontFamily: FONT_TEXT }}>{market.label}</p>
+                <div className="flex flex-col justify-center gap-4 px-6 py-6 rounded border border-[#2b2b2b]" style={{ background: 'linear-gradient(to bottom, rgba(31,33,20,0.8) 0%, rgba(15,16,10,0.8) 57.21%)' }}>
+                  <div className="flex flex-wrap gap-4">
+                    {market.rows.map((row) => (
+                      <div key={row.name} className="flex items-center gap-3">
+                        <p className="text-xl font-semibold uppercase text-white" style={{ fontFamily: FONT_TEXT }}>{row.name}</p>
+                        <p className="text-xl font-semibold uppercase" style={{ fontFamily: FONT_NUM, color: pctColor(row.pct) }}>{row.pct}%</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Right cols 2-3 — handicap table */}
+          {handicapMarket && (
+            <div className="flex flex-col gap-3 col-span-2">
+              <p className="text-sm font-semibold text-[#d9ff00]" style={{ fontFamily: FONT_TEXT }}>{handicapMarket.label}</p>
+              <div className="flex flex-col justify-center gap-8 p-6 rounded border-2 border-[#2b2b2b] flex-1" style={{ background: 'linear-gradient(to bottom, rgba(31,33,20,0.8) 0%, rgba(15,16,10,0.8) 57.21%)' }}>
+                {/* Header */}
+                <div className="flex justify-between items-center">
+                  <p className="text-xs font-semibold uppercase text-white" style={{ fontFamily: FONT_TEXT }}>TIMES</p>
+                  <div className="flex justify-between w-48">
+                    <p className="text-xs font-semibold uppercase text-white" style={{ fontFamily: FONT_TEXT }}>+1.5</p>
+                    <p className="text-xs font-semibold uppercase text-white" style={{ fontFamily: FONT_TEXT }}>-1.5</p>
+                  </div>
+                </div>
+                {/* Team rows — pairs: [i*2]=team+1.5, [i*2+1]=team-1.5 */}
+                <div className="flex flex-col gap-6">
+                  {Array.from({ length: Math.ceil(handicapMarket.rows.length / 2) }).map((_, i) => {
+                    const r1 = handicapMarket.rows[i * 2]
+                    const r2 = handicapMarket.rows[i * 2 + 1]
+                    if (!r1) return null
+                    return (
+                      <div key={i} className="flex flex-col gap-6">
+                        {i > 0 && <div className="w-full h-[2px] bg-[#2b2b2b]" />}
+                        <div className="flex justify-between items-center">
+                          <p className="text-xl font-semibold uppercase text-white" style={{ fontFamily: FONT_TEXT }}>{r1.name}</p>
+                          <div className="flex justify-between w-48">
+                            <p className="text-xl font-semibold uppercase" style={{ fontFamily: FONT_NUM, color: pctColor(r1.pct) }}>{r1.pct}%</p>
+                            {r2 && <p className="text-xl font-semibold uppercase" style={{ fontFamily: FONT_NUM, color: pctColor(r2.pct) }}>{r2.pct}%</p>}
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
               </div>
             </div>
-          ))}
+          )}
+
         </div>
       </div>
     </div>
@@ -624,34 +704,177 @@ function SeriesMarketsSection({ markets }: { markets: Array<{ label: string; row
 
 interface RoundMarket { threshold: string; over: number; under: number }
 
+const MAP_CARD_BG = 'linear-gradient(to bottom, rgba(31,33,20,0.8) 0%, rgba(15,16,10,0.8) 57.21%)'
+const GEIST = "'Geist', sans-serif"
+
 function MapRoundsSection({ maps, rounds }: { maps: any[]; rounds: RoundMarket[] }) {
+  const [selectedMaps, setSelectedMaps] = useState<Set<string>>(new Set())
+
   if (!maps.length) return null
+
+  const toggleMap = (name: string) => {
+    setSelectedMaps(prev => {
+      const next = new Set(prev)
+      if (next.has(name)) { next.delete(name) } else { next.add(name) }
+      return next
+    })
+  }
+
+  const filteredMaps = selectedMaps.size === 0 ? maps : maps.filter(m => selectedMaps.has(m.map))
+
+  const filterBtn = (active: boolean, onClick: () => void, label: string, dimmed?: boolean) => (
+    <button
+      key={label}
+      onClick={onClick}
+      style={{
+        fontFamily: GEIST,
+        fontWeight: 500,
+        fontSize: '14px',
+        padding: '6px 14px',
+        borderRadius: '4px',
+        border: `1px solid ${active ? '#d9ff00' : '#2b2b2b'}`,
+        background: active ? '#d9ff00' : 'transparent',
+        color: active ? '#000' : '#fff',
+        cursor: 'pointer',
+        opacity: dimmed ? 0.45 : 1,
+        transition: 'all 0.12s',
+        whiteSpace: 'nowrap' as const,
+      }}
+    >
+      {label}
+    </button>
+  )
+
   return (
-    <div className="w-full bg-[#05060f] px-6 md:px-12 py-6">
-      <div className="max-w-[1184px] mx-auto flex flex-col gap-6">
-        <MapRoundsTable maps={maps} />
-        {rounds.length > 0 && (
-          <div className="flex flex-col lg:flex-row gap-6">
-            {rounds.map((r) => (
-              <div key={r.threshold} className="panel-bg rounded-[20px] border border-[#2b2b2b] p-[18px] flex flex-col gap-6 flex-1 min-w-0">
-                <p className="text-[16px] uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 600, color: '#BBFF14' }}>
-                  Rounds {r.threshold}
-                </p>
-                <div className="flex flex-col">
-                  <div className="flex items-center justify-between">
-                    <p className="text-[24px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500, color: '#e2e8f0' }}>Over</p>
-                    <span className="text-[20px]" style={{ fontFamily: FONT_NUM, fontWeight: 600, color: pctColor(r.over) }}>{r.over}%</span>
+    <div className="w-full bg-[#0F100A] px-6 md:px-12 py-6">
+      <div className="max-w-[996px] mx-auto flex flex-col gap-6">
+
+        {/* Section label */}
+        <p className="text-sm font-semibold text-[#d9ff00]" style={{ fontFamily: FONT_TEXT }}>Map Pool</p>
+
+        {/* Main card */}
+        <div
+          className="rounded border border-[#2b2b2b] p-6 flex flex-col gap-6"
+          style={{ background: MAP_CARD_BG }}
+        >
+          {/* Filter buttons */}
+          <div className="flex flex-wrap gap-2">
+            {filterBtn(selectedMaps.size === 0, () => setSelectedMaps(new Set()), 'All')}
+            {maps.map(m => filterBtn(selectedMaps.has(m.map), () => toggleMap(m.map), m.map, !!m.banned_by))}
+          </div>
+
+          {/* Table */}
+          <div className="overflow-x-auto -mx-6 px-6">
+            <div style={{ minWidth: '580px' }}>
+              {/* Header row */}
+              <div
+                className="grid border-b border-[#2b2b2b]"
+                style={{ gridTemplateColumns: '130px 1fr 1fr 1fr 1fr 80px 110px' }}
+              >
+                {['Map', 'O17.5', 'O19.5', 'O20.5', 'O21.5', 'Samples', 'Status'].map(h => (
+                  <div key={h} className="px-0 py-3 pr-4">
+                    <p style={{ fontFamily: GEIST, fontWeight: 500, fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                      {h}
+                    </p>
                   </div>
-                  <div className="w-full h-[1px] bg-[#2B2B2B] my-6" />
-                  <div className="flex items-center justify-between">
-                    <p className="text-[24px]" style={{ fontFamily: FONT_TEXT, fontWeight: 500, color: '#e2e8f0' }}>Under</p>
-                    <span className="text-[20px]" style={{ fontFamily: FONT_NUM, fontWeight: 600, color: pctColor(r.under) }}>{r.under}%</span>
+                ))}
+              </div>
+
+              {/* Data rows */}
+              {filteredMaps.map((row: any, i: number) => (
+                <div
+                  key={row.map}
+                  className="grid border-b border-[#2b2b2b] last:border-none"
+                  style={{
+                    gridTemplateColumns: '130px 1fr 1fr 1fr 1fr 80px 110px',
+                    background: i % 2 === 1 ? 'rgba(255,255,255,0.02)' : 'transparent',
+                  }}
+                >
+                  <div className="py-4 pr-4 flex items-center" style={{ opacity: row.banned_by ? 0.45 : 1 }}>
+                    <span style={{ fontFamily: GEIST, fontWeight: 500, fontSize: '14px', color: '#fff' }}>{row.map}</span>
+                  </div>
+                  {[row.over_17_5, row.over_19_5, row.over_20_5, row.over_21_5].map((val: number, vi: number) => (
+                    <div key={vi} className="py-4 pr-4 flex items-center" style={{ opacity: row.banned_by ? 0.45 : 1 }}>
+                      <span style={{ fontFamily: FONT_NUM, fontWeight: 600, fontSize: '16px', color: pctColor(val) }}>{val}%</span>
+                    </div>
+                  ))}
+                  <div className="py-4 pr-4 flex items-center" style={{ opacity: row.banned_by ? 0.45 : 1 }}>
+                    <span style={{ fontFamily: FONT_NUM, fontWeight: 400, fontSize: '13px', color: '#6b7280' }}>
+                      {row.team_a_sample}/{row.team_b_sample}
+                    </span>
+                  </div>
+                  <div className="py-4 pr-4 flex items-center">
+                    {row.banned_by ? (
+                      <span
+                        className="state-red"
+                        style={{
+                          fontFamily: GEIST,
+                          fontWeight: 600,
+                          fontSize: '11px',
+                          padding: '4px 0',
+                          color: '#fff',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '76px',
+                        }}
+                      >
+                        Ban {row.banned_by.length > 6 ? row.banned_by.slice(0, 4) : row.banned_by}
+                      </span>
+                    ) : (
+                      <span
+                        className="state-green"
+                        style={{
+                          fontFamily: GEIST,
+                          fontWeight: 600,
+                          fontSize: '11px',
+                          padding: '4px 0',
+                          color: '#fff',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '76px',
+                        }}
+                      >
+                        Active
+                      </span>
+                    )}
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        )}
+        </div>
+
+        {/* Threshold summary cards */}
+        {(() => {
+          const thresholds = [
+            { label: 'Over 17.5', key: 'over_17_5' },
+            { label: 'Over 19.5', key: 'over_19_5' },
+            { label: 'Over 20.5', key: 'over_20_5' },
+            { label: 'Over 21.5', key: 'over_21_5' },
+          ]
+          const src = filteredMaps.length > 0 ? filteredMaps : maps
+          return (
+            <div className="flex gap-6">
+              {thresholds.map(({ label, key }) => {
+                const avg = Math.round(src.reduce((s: number, m: any) => s + (m[key] ?? 0), 0) / src.length)
+                return (
+                  <div key={key} className="flex-1 flex flex-col gap-3">
+                    <p className="text-sm font-semibold text-[#d9ff00]" style={{ fontFamily: FONT_TEXT }}>{label}</p>
+                    <div
+                      className="rounded border border-[#2b2b2b] p-6 flex items-center justify-center"
+                      style={{ background: MAP_CARD_BG }}
+                    >
+                      <span style={{ fontFamily: FONT_NUM, fontWeight: 700, fontSize: '36px', color: pctColor(avg) }}>{avg}%</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )
+        })()}
+
       </div>
     </div>
   )
@@ -672,7 +895,7 @@ function MapRoundsSection({ maps, rounds }: { maps: any[]; rounds: RoundMarket[]
 //
 //   return (
 //     <div className="w-full bg-[#05060f] px-6 md:px-12 py-6">
-//       <div className="max-w-[1184px] mx-auto flex flex-col gap-6">
+//       <div className="max-w-[996px] mx-auto flex flex-col gap-6">
 //         <p className="text-[14px] text-white uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>
 //           Entries Archive
 //         </p>
@@ -797,7 +1020,7 @@ function ScenariosSection({ scenarios }: { scenarios: ScenarioData[] }) {
   if (!scenarios.length) return null
   return (
     <div className="w-full bg-[#05060f] px-6 md:px-12 py-6">
-      <div className="max-w-[1184px] mx-auto flex flex-col gap-6">
+      <div className="max-w-[996px] mx-auto flex flex-col gap-6">
         <p className="text-[14px] text-white uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>
           Scenarios
         </p>
@@ -817,7 +1040,7 @@ function NotRecommendedSection({ items }: { items: NotRecItem[] }) {
   if (!items.length) return null
   return (
     <div className="w-full bg-[#05060f] px-6 md:px-12 py-6 pb-12">
-      <div className="max-w-[1184px] mx-auto flex flex-col gap-6">
+      <div className="max-w-[996px] mx-auto flex flex-col gap-6">
         <p className="text-[14px] text-white uppercase" style={{ fontFamily: FONT_TEXT, fontWeight: 500 }}>
           Not Recommended
         </p>
@@ -940,6 +1163,16 @@ export default function DataPageV2({ analysis, coverImage, mode = 'full', teaser
   const mapAnalysis: any[] = raw.map_analysis ?? []
   const roundMarkets: RoundMarket[] = raw.round_markets ?? []
 
+  // Scenarios
+  const scenarios: ScenarioData[] = (data.recommendations?.scenario_analysis ?? []).map(
+    (s: any, i: number) => jsonScenarioToData(s, i, stakesByMarket, totalInvestment, bo3Raw)
+  )
+
+  // Not recommended
+  const notRecItems: NotRecItem[] = (data.do_not_recommend ?? []).map(
+    (d: any, i: number) => parseDoNotRecommend(d, i + 1)
+  )
+
   // Header meta
   const tournament: string = data.header?.event ?? raw.tournament ?? ''
   const format: string     = data.header?.format ?? raw.format ?? 'BO3'
@@ -965,6 +1198,8 @@ export default function DataPageV2({ analysis, coverImage, mode = 'full', teaser
       <SeriesMarketsSection markets={seriesMarkets} />
       <MapRoundsSection maps={mapAnalysis} rounds={roundMarkets} />
       {isTeaser && <GatedSection />}
+      <div style={{ height: '128px', background: '#0F100A' }} />
+      <SiteFooter />
     </div>
   )
 }

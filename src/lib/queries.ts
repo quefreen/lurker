@@ -31,10 +31,10 @@ export async function getMatchesForCarrossel(): Promise<MatchCardData[]> {
         m.tournament,
         m.match_date,
         m.status,
-        COALESCE(json_array_length(json_extract(ma.data, '$.entries_ranked')), 0) AS entries_count
+        COALESCE(json_array_length(json_extract(ma.data, '$.recommendations.entries_with_stakes')), 0) AS entries_count
       FROM matches m
       LEFT JOIN match_analysis ma ON m.slug = ma.slug
-      ORDER BY m.match_date DESC
+      ORDER BY m.id DESC
     `);
 
     return (result.rows as any[]).map((row) => ({

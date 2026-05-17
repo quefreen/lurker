@@ -1,9 +1,9 @@
 export const dynamic = 'force-dynamic';
-import { getMatchesForCarrossel, getProfitCardData } from '@/lib/queries';
+import { getMatchesForCarrossel } from '@/lib/queries';
 import { calcCardState } from '@/lib/utils';
 import DataPageV2 from '@/components/DataPageV2';
-import { CarrosselJogos } from '@/components/CarrosselJogos';
-import LandingMenu from '@/components/LandingMenu';
+import { CarrosselJogosV2 } from '@/components/CarrosselJogosV2';
+import { SiteNavLogged } from '@/components/SiteNavLogged';
 import type { MatchAnalysis } from '@/lib/types';
 
 const MOCK_ANALYSIS: MatchAnalysis = {
@@ -227,31 +227,63 @@ const MOCK_ANALYSIS: MatchAnalysis = {
   summary_table: [],
   disclaimer: 'Esta análise é apenas para fins educacionais. Aposte com responsabilidade.',
   veto_prediction: null,
-  map_analysis: null,
+
+  series_markets: [
+    {
+      label: 'Total Maps 2.5',
+      rows: [
+        { name: 'Over',  pct: 39 },
+        { name: 'Under', pct: 61 },
+      ],
+    },
+    {
+      label: 'At Least 1 Map',
+      rows: [
+        { name: 'NaVi', pct: 85 },
+        { name: 'G2',   pct: 55 },
+      ],
+    },
+    {
+      label: 'Handicap',
+      rows: [
+        // pairs: [team +1.5, team -1.5]
+        { name: 'NaVi', pct: 85 },
+        { name: 'NaVi', pct: 30 },
+        { name: 'G2',   pct: 55 },
+        { name: 'G2',   pct: 8  },
+      ],
+    },
+  ],
+
+  map_analysis: [
+    { map: 'Mirage',   over_17_5: 72, over_19_5: 61, over_20_5: 54, over_21_5: 44, team_a_sample: 14, team_b_sample: 11, banned_by: null },
+    { map: 'Inferno',  over_17_5: 68, over_19_5: 55, over_20_5: 47, over_21_5: 38, team_a_sample: 12, team_b_sample: 9,  banned_by: null },
+    { map: 'Nuke',     over_17_5: 58, over_19_5: 44, over_20_5: 36, over_21_5: 28, team_a_sample: 10, team_b_sample: 8,  banned_by: 'G2' },
+    { map: 'Ancient',  over_17_5: 65, over_19_5: 52, over_20_5: 43, over_21_5: 35, team_a_sample: 9,  team_b_sample: 10, banned_by: null },
+    { map: 'Vertigo',  over_17_5: 70, over_19_5: 58, over_20_5: 49, over_21_5: 40, team_a_sample: 8,  team_b_sample: 7,  banned_by: 'NaVi' },
+    { map: 'Overpass', over_17_5: 62, over_19_5: 48, over_20_5: 40, over_21_5: 31, team_a_sample: 11, team_b_sample: 12, banned_by: null },
+    { map: 'Anubis',   over_17_5: 75, over_19_5: 63, over_20_5: 55, over_21_5: 46, team_a_sample: 7,  team_b_sample: 8,  banned_by: null },
+  ],
+
+  round_markets: [
+    { threshold: 'Map 1 O/U 26.5', over: 62, under: 38 },
+    { threshold: 'Map 2 O/U 26.5', over: 58, under: 42 },
+  ],
 };
 
 export default async function ModeloPage() {
-  const [matches, profit] = await Promise.all([
-    getMatchesForCarrossel(),
-    getProfitCardData(),
-  ]);
+  const matches = await getMatchesForCarrossel();
 
   const cardState = calcCardState('S');
 
   return (
-    <main className="min-h-screen">
-      <LandingMenu />
-      <CarrosselJogos
-        matches={matches}
-        balance={profit.balance}
-        greens={profit.greens}
-        totalEntries={profit.totalResolved}
-        lastUpdated={profit.lastUpdated ?? undefined}
-      />
+    <main className="min-h-screen" style={{ background: '#0F100A' }}>
+      <SiteNavLogged />
+      <CarrosselJogosV2 matches={matches} />
       <DataPageV2
         analysis={MOCK_ANALYSIS}
         cardState={cardState}
-        mode="teaser"
+        mode="full"
         teaserEntriesCount={MOCK_ANALYSIS.entries_ranked.length}
       />
     </main>
