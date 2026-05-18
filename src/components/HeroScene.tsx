@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
+import type * as THREE from 'three';
 
 export function HeroScene({ children }: { children: ReactNode }) {
   const sectionRef     = useRef<HTMLDivElement>(null);
@@ -9,10 +10,10 @@ export function HeroScene({ children }: { children: ReactNode }) {
   const asciiCanvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const section     = sectionRef.current;
-    const asciiCanvas = asciiCanvasRef.current;
-    const radarCanvas = radarCanvasRef.current;
-    if (!section || !asciiCanvas || !radarCanvas) return;
+    if (!sectionRef.current || !asciiCanvasRef.current || !radarCanvasRef.current) return;
+    const section     = sectionRef.current as HTMLDivElement;
+    const asciiCanvas = asciiCanvasRef.current as HTMLCanvasElement;
+    const radarCanvas = radarCanvasRef.current as HTMLCanvasElement;
 
     let animId: number;
     let disposed = false;
@@ -22,7 +23,7 @@ export function HeroScene({ children }: { children: ReactNode }) {
       const { GLTFLoader }    = await import('three/examples/jsm/loaders/GLTFLoader.js');
       const { OrbitControls } = await import('three/examples/jsm/controls/OrbitControls.js');
 
-      if (disposed) return;
+      if (disposed || !section || !asciiCanvas || !radarCanvas) return;
 
       // ─── THREE SETUP ──────────────────────────────────────────────────────────
       const scene  = new THREE.Scene();
