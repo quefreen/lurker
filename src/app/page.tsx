@@ -5,6 +5,7 @@ import { mockGameCards } from '@/components/GameCard';
 import { GameCardItemV2 } from '@/components/GameCardV2';
 import { HeroScene } from '@/components/HeroScene';
 import Image from 'next/image';
+import Link from 'next/link';
 import { SiteFooter } from '@/components/SiteFooter';
 import { SiteNavSmart } from '@/components/SiteNavSmart';
 import { PricingButton } from '@/components/PricingButton';
@@ -56,6 +57,42 @@ export default async function HomePage() {
 
   return (
     <main style={{ background: '#0F100A', minHeight: '100vh' }}>
+      <style>{`
+        @media (max-width: 767px) {
+          /* ── Hero ── */
+          .hi-hero-meta { flex-wrap: wrap !important; justify-content: center !important; gap: 8px !important; }
+          .hi-hero-divider { display: none !important; }
+          .hi-hero-text { font-size: 24px !important; }
+          .hi-hero-btn { width: 100% !important; padding: 20px 24px !important; white-space: normal !important; justify-content: center !important; }
+
+          /* ── Cards ── */
+          .hi-cards-section { padding-top: 48px !important; padding-bottom: 48px !important; }
+          .hi-cards-title { font-size: 22px !important; text-align: left !important; }
+          .hi-cards-grid { overflow-x: auto !important; scroll-snap-type: x mandatory !important; -webkit-overflow-scrolling: touch; padding-bottom: 8px !important; gap: 12px !important; flex-wrap: nowrap !important; }
+          .hi-cards-grid::-webkit-scrollbar { display: none; }
+          .hi-card-item { flex: 0 0 280px !important; scroll-snap-align: start !important; }
+
+          /* ── How it works ── */
+          .hi-hiw-section { padding-top: 48px !important; }
+          .hi-hiw-bg-strip { height: 80px !important; }
+          .hi-hiw-heading { font-size: 28px !important; }
+          .hi-hiw-grid { flex-direction: column !important; gap: 12px !important; }
+          .hi-hiw-card { height: 220px !important; flex: none !important; width: 100% !important; }
+
+          /* ── Pricing ── */
+          .hi-pricing-section { padding-top: 64px !important; padding-bottom: 64px !important; }
+          .hi-pricing-wrapper { flex-direction: column !important; gap: 32px !important; }
+          .hi-pricing-headline { font-size: 22px !important; }
+          .hi-pricing-card { width: 100% !important; }
+          .hi-pricing-top { padding: 24px !important; }
+          .hi-pricing-top-inner { height: auto !important; }
+          .hi-pricing-pro { font-size: 20px !important; }
+          .hi-pricing-price { font-size: 20px !important; }
+          .hi-pricing-bottom { padding: 24px !important; gap: 24px !important; }
+          .hi-pricing-features { flex-direction: column !important; gap: 16px !important; }
+          .hi-pricing-btn { padding: 20px 24px !important; }
+        }
+      `}</style>
 
       {/* ── Menu + Hero ───────────────────────────────────────────────────────── */}
       <div className="relative">
@@ -64,36 +101,36 @@ export default async function HomePage() {
         <HeroScene>
           <div className="w-full flex items-center justify-center" style={{ height: '100vh' }}>
             <div className="flex flex-col items-center gap-[24px] px-[24px]" style={{ maxWidth: '996px', width: '100%' }}>
-              <div className="flex items-center gap-[6px]">
+              <div className="hi-hero-meta flex items-center gap-[6px]">
                 <span className="bg-clip-text" style={{ ...g(20, 600, 'transparent'), backgroundImage: 'linear-gradient(90deg, #fff 0%, #fff 100%)', WebkitBackgroundClip: 'text' }}>
                   Real numbers. Always.
                 </span>
-                <div style={{ width: '32px', height: '1px', background: '#ffffff' }} />
+                <div className="hi-hero-divider" style={{ width: '32px', height: '1px', background: '#ffffff' }} />
                 <div className="flex gap-[8px] items-center">
                   <span style={g(20, 500, '#ffffff')}>Updated</span>
                   <span style={g(20, 600, '#ffffff')}>{updatedLabel}</span>
                 </div>
               </div>
 
-              <p className="text-center whitespace-pre-line" style={{ ...g(56, 500, '#ffffff'), maxWidth: '800px' }}>
+              <p className="hi-hero-text text-center whitespace-pre-line" style={{ ...g(56, 500, '#ffffff'), maxWidth: '800px' }}>
                 {`${winRate}% win rate. ${netReturn} net return.\nThe data works.`}
               </p>
 
-              <PricingButton priceId={monthlyPriceId} className="btn-yellow-lurker" style={{ ...btnYellow, padding: '24px 48px' }}>Get the edge</PricingButton>
+              <PricingButton priceId={monthlyPriceId} className="hi-hero-btn btn-yellow-lurker" style={{ ...btnYellow, padding: '24px 48px' }}>Get the edge</PricingButton>
             </div>
           </div>
         </HeroScene>
       </div>
 
       {/* ── Cards ─────────────────────────────────────────────────────────────── */}
-      <section className="w-full" style={{ background: '#0F100A', paddingTop: '64px', paddingBottom: '64px' }}>
+      <section className="hi-cards-section w-full" style={{ background: '#0F100A', paddingTop: '64px', paddingBottom: '64px' }}>
         <div className="mx-auto flex flex-col gap-[48px] px-[24px]" style={{ maxWidth: '996px' }}>
-          <p className="text-center w-full" style={g(48, 500, '#ffffff')}>
+          <p className="hi-cards-title text-center w-full" style={g(48, 500, '#ffffff')}>
             Your next entry is already here.
           </p>
-          <div className="flex gap-[12px]">
+          <div className="hi-cards-grid flex gap-[12px]">
             {displayCards.map((card) => (
-              <div key={card.slug} style={{ flex: '0 0 calc(25% - 9px)', minWidth: 0 }}>
+              <div key={card.slug} className="hi-card-item" style={{ flex: '0 0 calc(25% - 9px)', minWidth: 0 }}>
                 <GameCardItemV2 card={card} />
               </div>
             ))}
@@ -102,20 +139,20 @@ export default async function HomePage() {
       </section>
 
       {/* ── How it works ──────────────────────────────────────────────────────── */}
-      <section id="how-it-works" className="w-full relative overflow-hidden" style={{ background: '#0F100A', paddingTop: '64px' }}>
-        <div className="absolute bottom-0 left-0 right-0" style={{ height: '250px', background: '#ffffff' }} />
+      <section id="how-it-works" className="hi-hiw-section w-full relative overflow-hidden" style={{ background: '#0F100A', paddingTop: '64px' }}>
+        <div className="hi-hiw-bg-strip absolute bottom-0 left-0 right-0" style={{ height: '250px', background: '#ffffff' }} />
         <div className="mx-auto flex flex-col gap-[48px] px-[24px] relative" style={{ maxWidth: '996px', zIndex: 1 }}>
           <div className="flex flex-col gap-[8px]">
             <p style={g(24, 500, '#ffffff')}>How it works.</p>
-            <p style={g(48, 500, '#ffffff')}>From data to edge.</p>
+            <p className="hi-hiw-heading" style={g(48, 500, '#ffffff')}>From data to edge.</p>
           </div>
-          <div className="flex gap-[18px]">
+          <div className="hi-hiw-grid flex gap-[18px]">
             {[
               { title: 'Pick a match',       desc: 'Every match is analyzed before it starts.',     img: '/howitworks_01.jpg' },
               { title: 'Follow the entries', desc: 'Entries ranked by edge and recommended stake.', img: '/howitworks_02.jpg' },
               { title: 'Secondary markets',  desc: 'Map pools, round totals, series markets.',      img: '/howitworks_03.jpg' },
             ].map((item) => (
-              <div key={item.title} className="relative flex flex-col justify-end p-[24px] flex-1 overflow-hidden" style={{ background: '#737373', height: '500px' }}>
+              <div key={item.title} className="hi-hiw-card relative flex flex-col justify-end p-[24px] flex-1 overflow-hidden" style={{ background: '#737373', height: '500px' }}>
                 {item.img && (
                   <Image src={item.img} alt={item.title} fill style={{ objectFit: 'cover', objectPosition: 'center top' }} />
                 )}
@@ -130,63 +167,59 @@ export default async function HomePage() {
       </section>
 
       {/* ── Pricing ───────────────────────────────────────────────────────────── */}
-      <section id="pricing" className="w-full" style={{ background: '#ffffff', paddingTop: '128px', paddingBottom: '128px' }}>
-        <div className="mx-auto flex flex-col gap-[64px] px-[24px]" style={{ maxWidth: '996px' }}>
-          <div className="flex gap-[24px] items-start">
-            <div className="flex flex-col gap-[17px] shrink-0" style={{ width: '282px' }}>
-              <p style={g(24, 500, '#0F100A')}>Pricing.</p>
-              <p style={{ ...g(48, 500, '#0F100A'), lineHeight: 1.1 }}>Simple pricing.<br />Full edge.</p>
+      <section id="pricing" className="hi-pricing-section w-full" style={{ background: '#ffffff', paddingTop: '128px', paddingBottom: '128px' }}>
+        <div className="mx-auto px-[24px]" style={{ maxWidth: '996px' }}>
+          <div className="hi-pricing-wrapper" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', alignSelf: 'stretch' }}>
+
+            {/* Left — headline */}
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '8px' }}>
+              <p style={g(24, 500, '#17190f')}>How it works.</p>
+              <p className="hi-pricing-headline" style={g(32, 500, '#17190f')}>
+                <span>Simple pricing.</span><br />
+                <span>Full edge.</span>
+              </p>
             </div>
-            <div className="flex flex-col gap-[18px] p-[24px] relative flex-1" style={{ border: '2px solid #e8e8e8' }}>
-              <div className="flex items-center justify-between">
-                <span style={g(24, 500, '#0F100A')}>Trial</span>
-                <span style={g(24, 500, '#0F100A')}>50 spots only</span>
-              </div>
-              <p style={g(48, 500, '#0F100A')}>Free for 3 days</p>
-              <p style={g(24, 500, '#0F100A')}>No card required.<br />Full access from minute one.</p>
-              <div className="flex h-[64px]">
-                <div className="flex-1 flex items-center px-[32px]" style={{ background: '#f1f1f1' }}>
-                  <span style={g(16, 500, '#0F100A')}>Insert your email</span>
+
+            {/* Right — card */}
+            <div className="hi-pricing-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', width: '648px' }}>
+
+              {/* Black top: price */}
+              <div className="hi-pricing-top" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', alignSelf: 'stretch', gap: '8px', padding: '48px', background: '#000' }}>
+                <div className="hi-pricing-top-inner" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-start', alignSelf: 'stretch', height: '56px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch' }}>
+                    <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-start', gap: '48px' }}>
+                      <p className="hi-pricing-pro" style={g(32, 600, '#fff')}>Pro</p>
+                      <p className="hi-pricing-pro" style={g(32, 300, '#9e9e9e')}>weekly</p>
+                    </div>
+                    <p className="hi-pricing-price" style={g(32, 600, '#fff')}>$ 6,99</p>
+                  </div>
                 </div>
-                <button className="btn-yellow-lurker" style={{ ...btnYellow, borderRadius: '0', padding: '0 32px' }}>
-                  Claim your spot
-                </button>
               </div>
-              <p style={g(24, 500, '#0F100A')}>12 / 50 remaining</p>
-            </div>
-          </div>
 
-          <div className="flex gap-[26px]">
-            <div className="flex-1 flex flex-col gap-[48px] items-center p-[24px] relative" style={{ background: '#d9ff00', border: '2px solid #d9ff00' }}>
-              <div className="flex items-center justify-between w-full">
-                <span style={g(24, 400, '#0F100A')}>Pro</span>
-                <span style={g(24, 400, '#0F100A')}>14 days</span>
+              {/* Dark bottom: features + button */}
+              <div className="hi-pricing-bottom" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', alignSelf: 'stretch', gap: '48px', padding: '48px', background: '#17190f' }}>
+                <div className="hi-pricing-features" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', alignSelf: 'stretch' }}>
+                  {(['Full access.', 'Cancel anytime.', 'TAX include'] as const).map((label) => (
+                    <div key={label} style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '14px' }}>
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+                        <circle cx="10" cy="10" r="10" fill="#AFDFC1" />
+                        <path d="M16.3 7.4L9.25 14.45L5 10.2L6.4 8.8L9.25 11.65L14.9 6L16.3 7.4Z" fill="#009D31" />
+                      </svg>
+                      <p style={g(20, 500, '#fff')}>{label}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <Link
+                  href="/sign-in?redirect_url=/checkout"
+                  className="hi-pricing-btn btn-yellow-lurker"
+                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', alignSelf: 'stretch', padding: '24px 48px', textDecoration: 'none', cursor: 'pointer' }}
+                >
+                  <p style={g(20, 500, '#0f0f0f')}>Get the edge</p>
+                </Link>
               </div>
-              <p style={g(48, 500, '#0F100A')}>$7.99</p>
-              <div className="flex flex-col gap-[12px] items-center w-full">
-                <div style={{ height: '1px', background: '#2b2b2b', width: '100%' }} />
-                <p style={{ ...g(14, 600, '#0F100A'), textTransform: 'uppercase' }}>43% cheaper per day than Scout.</p>
-              </div>
-              <div className="flex flex-col gap-[12px] items-center">
-                <p style={g(24, 500, '#0F100A')}>Cancel anytime.</p>
-                <p style={g(24, 500, '#0F100A')}>Full access.</p>
-              </div>
-              <PricingButton priceId={monthlyPriceId} style={{ ...btnWhite, width: '100%', padding: '24px 48px' }}>Get the edge</PricingButton>
             </div>
 
-            <div className="flex-1 flex flex-col gap-[48px] items-center p-[24px] relative" style={{ border: '2px solid #f3f3f3' }}>
-              <div className="flex items-center justify-between w-full">
-                <span style={g(24, 400, '#0F100A')}>Scout</span>
-                <span style={g(24, 400, '#0F100A')}>7 days</span>
-              </div>
-              <p style={g(48, 500, '#0F100A')}>$4.99</p>
-              <div style={{ height: '30px' }} />
-              <div className="flex flex-col gap-[12px] items-center">
-                <p style={g(24, 500, '#0F100A')}>Cancel anytime.</p>
-                <p style={g(24, 500, '#0F100A')}>Full access.</p>
-              </div>
-              <PricingButton priceId={annualPriceId} style={{ ...btnWhite, width: '100%', padding: '24px 48px' }}>Start scouting</PricingButton>
-            </div>
           </div>
         </div>
       </section>
